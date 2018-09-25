@@ -28,7 +28,7 @@ class GrpcServer
 {
     this()
     {
-        	_http2Configuration = new HTTP2Configuration();
+        	_http2Configuration = new Http2Configuration();
             _http2Configuration.setSecureConnectionEnabled(false);
             _http2Configuration.setFlowControlStrategy("simple");
             _http2Configuration.getTcpConfiguration().setTimeout(60 * 1000);
@@ -41,7 +41,7 @@ class GrpcServer
 
     void listen(string address , ushort port)
     {
-        _server = new HTTP2Server(address, port, _http2Configuration, 
+        _server = new HttpServer(address, port, _http2Configuration, 
 	    new class ServerSessionListener {
 
             override
@@ -207,7 +207,7 @@ class GrpcServer
             bool onIdleTimeout(Session session) {
                 return false;
             }
-        }, new ServerHTTPHandlerAdapter(), null);
+        }, new ServerHttpHandlerAdapter(), null);
     }
 
     void register(GrpcService service)
@@ -228,9 +228,9 @@ class GrpcServer
   
 
     protected:
-        HTTP2Configuration      _http2Configuration;
+        Http2Configuration      _http2Configuration;
         Map!(int, int)          _settings;
-        HTTP2Server             _server;
+        HttpServer             _server;
         GrpcService[string]     _router;
 
 }

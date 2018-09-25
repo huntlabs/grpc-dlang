@@ -46,14 +46,14 @@ class GrpcClient
 
     this()
     {
-        _http2Configuration = new HTTP2Configuration();
+        _http2Configuration = new Http2Configuration();
         _http2Configuration.setSecureConnectionEnabled(false);
         _http2Configuration.setFlowControlStrategy("simple");
         _http2Configuration.getTcpConfiguration().setTimeout(60 * 1000);
         _http2Configuration.setProtocol(HttpVersion.HTTP_2.asString());
 
-        _promise = new FuturePromise!(HTTPClientConnection)();
-        _client = new HTTP2Client(_http2Configuration);
+        _promise = new FuturePromise!(HttpClientConnection)();
+        _client = new HttpClient(_http2Configuration);
     }
 
 
@@ -62,7 +62,7 @@ class GrpcClient
         _host = host;
         _port = port;
         _client.connect(host , port , _promise,
-        new class ClientHTTP2SessionListener {
+        new class ClientHttp2SessionListener {
 
             override
             Map!(int, int) onPreface(Session session) {
@@ -151,7 +151,7 @@ class GrpcClient
             fields);
 
         auto conn = _promise.get();
-        auto client = cast(HTTP2ClientConnection)conn;
+        auto client = cast(Http2ClientConnection)conn;
         auto streampromise = new FuturePromise!(Stream)();
         auto http2session = client.getHttp2Session();
 
@@ -246,8 +246,8 @@ class GrpcClient
 protected:
     string _host;
     ushort _port;
-    HTTP2Client _client;
-    FuturePromise!(HTTPClientConnection) _promise;
-    HTTP2Configuration  _http2Configuration;
+    HttpClient _client;
+    FuturePromise!(HttpClientConnection) _promise;
+    Http2Configuration  _http2Configuration;
 
 }
