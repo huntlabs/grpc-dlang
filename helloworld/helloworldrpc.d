@@ -10,7 +10,7 @@ import std.array;
 public import hunt.net.Result;
 import grpc;
 import google.protobuf;
-import kiss.logger;
+import hunt.logging;
 
 
 

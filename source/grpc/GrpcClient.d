@@ -1,12 +1,10 @@
 module grpc.GrpcClient;
 
-import hunt.http.client.http.SimpleHTTPClient;
-import hunt.http.client.http.SimpleResponse;
 
 import hunt.util.concurrent.Promise;
 import hunt.util.concurrent.CompletableFuture;
 
-import kiss.logger;
+import hunt.logging;
 
 import std.conv;
 import std.stdio;
@@ -17,10 +15,10 @@ import std.stdio;
 
 import std.stdio;
 
-import hunt.http.client.http.ClientHTTP2SessionListener;
-import hunt.http.client.http.HTTP2Client;
-import hunt.http.client.http.HTTP2ClientConnection;
-import hunt.http.client.http.HTTPClientConnection;
+import hunt.http.client.ClientHttp2SessionListener;
+import hunt.http.client.HttpClient;
+import hunt.http.client.Http2ClientConnection;
+import hunt.http.client.HttpClientConnection;
 
 import hunt.http.codec.http.frame;
 import hunt.http.codec.http.model;
@@ -31,7 +29,6 @@ import hunt.util.functional;
 import hunt.util.concurrent.FuturePromise;
 
 import hunt.container;
-import kiss.logger;
 import std.format;
 import hunt.net;
 

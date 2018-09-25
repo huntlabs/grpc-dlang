@@ -4,7 +4,7 @@ import helloworld.helloworld;
 
 import helloworld.helloworldrpc;
 import grpc;
-import kiss.logger;
+import hunt.logging;
 import std.stdio;
 
 class GreeterImpl : GreeterBase
