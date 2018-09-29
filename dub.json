@@ -5,12 +5,12 @@
     "description": "A high performance full-stack Web framework.",
     "libs": [],
     "dependencies": {
-        "protobuf": {"path":"../protobuf-d"},
-		"hunt-http":{"path":"../hunt-http"}
+        "protobuf": "~>0.3.1",
+		"hunt-http":"~>0.0.4"
     },
     "configurations":[
         {
-            "name" : "grpc",
+            "name" : "hunt-grpc",
             "targetType": "library"
     
         },

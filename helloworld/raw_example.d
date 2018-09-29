@@ -9,7 +9,7 @@ import std.stdio;
 import std.array:array;
 
 
-import kiss.logger;
+import hunt.logging;
 
 class MyService : GrpcService
 {
