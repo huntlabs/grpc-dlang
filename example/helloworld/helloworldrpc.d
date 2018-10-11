@@ -17,47 +17,47 @@ import hunt.logging;
 
 class GreeterClient
 {
-	this(Channel channel)
-	{
-		_channel = channel;
-	}
+    this(Channel channel)
+    {
+        _channel = channel;
+    }
 
-	HelloReply SayHello( HelloRequest request)
-	{
-		mixin(CM!(HelloReply , GreeterBase.SERVICE));
-	}
+    HelloReply SayHello( HelloRequest request)
+    {
+        mixin(CM!(HelloReply , GreeterBase.SERVICE));
+    }
 
-	void SayHello( HelloRequest request , void delegate(Result!HelloReply reply) dele)
-	{
-		mixin(CMA!(HelloReply , GreeterBase.SERVICE));
-	}
+    void SayHello( HelloRequest request , void delegate(Result!HelloReply reply) dele)
+    {
+        mixin(CMA!(HelloReply , GreeterBase.SERVICE));
+    }
 
 
-	private:
-	Channel _channel;
+    private:
+    Channel _channel;
 }
 
 class GreeterBase: GrpcService
 {
-	enum SERVICE  = "helloworld.Greeter";
-	string getModule()
-	{
-		return SERVICE;
-	}
+    enum SERVICE  = "helloworld.Greeter";
+    string getModule()
+    {
+        return SERVICE;
+    }
 
-	HelloReply SayHello(HelloRequest ){ return new HelloReply(); }
+    HelloReply SayHello(HelloRequest ){ return new HelloReply(); }
 
-	ubyte[] process(string method , ubyte[] data)
-	{
-		switch(method)
-		{
-			mixin(SM!(HelloRequest , "SayHello"));
+    ubyte[] process(string method , ubyte[] data)
+    {
+        switch(method)
+        {
+            mixin(SM!(HelloRequest , "SayHello"));
 
-			default:
-			logWarning("none method ", method);
-				return null;
-		}
-	}
+            default:
+            logWarning("none method ", method);
+                return null;
+        }
+    }
 }
 
 

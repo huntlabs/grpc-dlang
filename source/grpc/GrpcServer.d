@@ -22,7 +22,7 @@ class GrpcServer
 {
     this()
     {
-        	_http2Configuration = new Http2Configuration();
+            _http2Configuration = new Http2Configuration();
             _http2Configuration.setSecureConnectionEnabled(false);
             _http2Configuration.setFlowControlStrategy("simple");
             _http2Configuration.getTcpConfiguration().setTimeout(60 * 1000);
@@ -36,7 +36,7 @@ class GrpcServer
     void listen(string address , ushort port)
     {
         _server = new HttpServer(address, port, _http2Configuration, 
-	    new class ServerSessionListener {
+        new class ServerSessionListener {
 
             override
             Map!(int, int) onPreface(Session session) {
@@ -108,7 +108,7 @@ class GrpcServer
                         grpc_data ~= data;
 
                         DataFrame smallDataFrame = new DataFrame(stream.getId(),
-			            ByteBuffer.wrap(cast(byte[])grpc_data), false);
+                        ByteBuffer.wrap(cast(byte[])grpc_data), false);
                         
                         stream.data(smallDataFrame , Callback.NOOP);
                         

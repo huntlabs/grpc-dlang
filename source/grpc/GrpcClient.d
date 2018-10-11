@@ -154,45 +154,45 @@ class GrpcClient
 
         http2session.newStream(new HeadersFrame(metaData , null , false), streampromise , new class StreamListener {
             /// unused
-            	override
-			StreamListener onPush(Stream stream,
-					PushPromiseFrame frame) {
-				logInfo("onPush");
+                override
+            StreamListener onPush(Stream stream,
+                    PushPromiseFrame frame) {
+                logInfo("onPush");
                 return null;
-			}
+            }
             /// unused
             override
             void onReset(Stream stream, ResetFrame frame, Callback callback) {
                 logInfo("onReset");
                 try {
-					onReset(stream, frame);
-					callback.succeeded();
-				} catch (Exception x) {
-					callback.failed(x);
-				}
-			}
+                    onReset(stream, frame);
+                    callback.succeeded();
+                } catch (Exception x) {
+                    callback.failed(x);
+                }
+            }
             /// unused
-			override
-			void onReset(Stream stream, ResetFrame frame) {
-				logInfo("onReset2");
-			}
+            override
+            void onReset(Stream stream, ResetFrame frame) {
+                logInfo("onReset2");
+            }
             /// unused
-			override
-			bool onIdleTimeout(Stream stream, Exception x) {
+            override
+            bool onIdleTimeout(Stream stream, Exception x) {
                 logInfo("timeout");
-				return true;
-			}
+                return true;
+            }
             /// unused
-			override string toString()
-			{
-				return super.toString();
-			}
+            override string toString()
+            {
+                return super.toString();
+            }
 
             override void onHeaders(Stream stream, HeadersFrame frame) {
-				logInfo("client received headers ", frame.toString());
-			}
+                logInfo("client received headers ", frame.toString());
+            }
 
-			override void onData(Stream stream, DataFrame frame, Callback callback) {
+            override void onData(Stream stream, DataFrame frame, Callback callback) {
               
                 auto bytes = cast(ubyte[])BufferUtils.toString(frame.getData());
                 if(bytes.length < 5)
@@ -203,7 +203,7 @@ class GrpcClient
                 auto result = new Result!(ubyte[])(bytes[5 .. $].dup);
                 dele(result);
                 logInfo("client received data " , result.result);
-			}
+            }
         });
 
         auto stream =  streampromise.get();
@@ -217,19 +217,19 @@ class GrpcClient
         grpc_data ~= len;
         grpc_data ~= data;
         DataFrame smallDataFrame = new DataFrame(stream.getId(),
-			ByteBuffer.wrap(cast(byte[])grpc_data), true);
+            ByteBuffer.wrap(cast(byte[])grpc_data), true);
 
         stream.data(smallDataFrame , new class NoopCallback {
 
-		override
-		void succeeded() {
-		}
+        override
+        void succeeded() {
+        }
 
-		override
-		void failed(Exception x) {
+        override
+        void failed(Exception x) {
             logInfo("sending failed");
-		}
-	});
+        }
+    });
     }
 
     protected
