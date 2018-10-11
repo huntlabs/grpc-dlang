@@ -1,6 +1,7 @@
 module grpc.GrpcServer;
 
 import std.stdio;
+import std.string;
 
 import hunt.http.codec.http.frame;
 import hunt.http.codec.http.model;
@@ -10,18 +11,11 @@ import hunt.http.server.HttpServer;
 import hunt.http.server.ServerHttpHandler;
 import hunt.http.server.ServerSessionListener;
 
-import std.string;
-
 import hunt.util.functional;
 import hunt.container;
-
 import hunt.logging;
+
 import grpc.GrpcService;
-
-
-
-
-
 
 alias Server = GrpcServer;
 class GrpcServer
@@ -225,12 +219,12 @@ class GrpcServer
         _server.stop();
     }
 
-  
-
-    protected:
+    protected
+    {
         Http2Configuration      _http2Configuration;
         Map!(int, int)          _settings;
         HttpServer             _server;
         GrpcService[string]     _router;
+    }
 
 }

@@ -2,7 +2,6 @@ module grpc.GrpcException;
 import std.exception;
 import core.exception;
 
-
 /// client exception list - will do next. (idletimeout) 
 /// 1 timeout
 /// 2 neterror          
