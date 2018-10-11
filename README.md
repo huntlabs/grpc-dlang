@@ -28,7 +28,6 @@ protoc -I ./doc/ --grpc_out=./example --plugin=protoc-gen-grpc=grpc_dlang_plugin
       }
   }
 
-
   string host = "0.0.0.0";
   ushort port = 50051;
 
@@ -52,9 +51,13 @@ protoc -I ./doc/ --grpc_out=./example --plugin=protoc-gen-grpc=grpc_dlang_plugin
   HelloReply reply = client.SayHello(request);
   ```
  # build
- 
- 1 dub build ---  lib
- 
- 2 dub build -c=example --- example  
- 
-  
+
+for library:
+```shell
+dub build -v
+ ```
+
+ for example:
+ ```shell
+ dub build -c=example
+ ```
