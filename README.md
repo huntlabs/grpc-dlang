@@ -13,7 +13,7 @@ protoc -I ./doc/ --grpc_out=./example --plugin=protoc-gen-grpc=grpc_dlang_plugin
  
  # example-server
  
-```
+```D
   import helloworld.helloworld;
   import helloworld.helloworldrpc;
   import grpc;
@@ -38,7 +38,7 @@ protoc -I ./doc/ --grpc_out=./example --plugin=protoc-gen-grpc=grpc_dlang_plugin
 ```
 
 # example-client
-```
+```D
   import helloworld.helloworld;
   import helloworld.helloworldrpc;
   import grpc;
@@ -54,7 +54,7 @@ protoc -I ./doc/ --grpc_out=./example --plugin=protoc-gen-grpc=grpc_dlang_plugin
 
 for library:
 ```shell
-dub build -v
+dub build
  ```
 
  for example:
