@@ -24,7 +24,7 @@ import hunt.http.codec.http.frame;
 import hunt.http.codec.http.model;
 import hunt.http.codec.http.stream;
 
-import hunt.util.exception;
+
 import hunt.util.functional;
 import hunt.util.concurrent.FuturePromise;
 
