@@ -1,19 +1,14 @@
 module grpc.GrpcClient;
 
-
 import hunt.util.concurrent.Promise;
 import hunt.util.concurrent.CompletableFuture;
 
 import hunt.logging;
 
-import std.conv;
 import std.stdio;
-
 import std.datetime;
 import std.conv;
-import std.stdio;
-
-import std.stdio;
+import std.format;
 
 import hunt.http.client.ClientHttp2SessionListener;
 import hunt.http.client.HttpClient;
@@ -29,7 +24,6 @@ import hunt.util.functional;
 import hunt.util.concurrent.FuturePromise;
 
 import hunt.container;
-import std.format;
 import hunt.net;
 
 import grpc.GrpcException;
@@ -110,9 +104,11 @@ class GrpcClient
     ubyte[] send(string path , ubyte[] data)
     {
         ubyte[] result;
-        sendAsync(path , data , (Result!(ubyte[]) data){
+        sendAsync(path , data, (Result!(ubyte[]) data) {
             if(data.failed())
+            {
                  throw data.cause();
+            }
             result = data.result;
         });
 
@@ -123,14 +119,17 @@ class GrpcClient
             tick++;
             if(tick > 1000)
                 break;
+
             Thread.sleep(dur!"msecs"(10));
         }
+
         if(tick > 1000)
+        {
             throw new GrpcTimeoutException("timeout");
+        }
         
         return result;
     }
-
 
 
     void sendAsync(string path , ubyte[] data , void delegate(Result!(ubyte[]) ) dele)
@@ -145,63 +144,55 @@ class GrpcClient
         // new stream
         //header
         MetaData.Request metaData = new MetaData.Request("POST", HttpScheme.HTTP,
-        new HostPortHttpField(format("%s:%d", _host, _port)), 
-        path,
-            HttpVersion.HTTP_2, 
-            fields);
+            new HostPortHttpField(format("%s:%d", _host, _port)), 
+            path, HttpVersion.HTTP_2, fields);
 
         auto conn = _promise.get();
         auto client = cast(Http2ClientConnection)conn;
         auto streampromise = new FuturePromise!(Stream)();
         auto http2session = client.getHttp2Session();
 
-        http2session.newStream(new HeadersFrame(metaData , null , false) ,
-        streampromise , new class StreamListener {
-
+        http2session.newStream(new HeadersFrame(metaData , null , false), streampromise , new class StreamListener {
             /// unused
-            	override
-			StreamListener onPush(Stream stream,
-					PushPromiseFrame frame) {
-				logInfo("onPush");
+                override
+            StreamListener onPush(Stream stream,
+                    PushPromiseFrame frame) {
+                logInfo("onPush");
                 return null;
-			}
+            }
             /// unused
             override
             void onReset(Stream stream, ResetFrame frame, Callback callback) {
                 logInfo("onReset");
                 try {
-					onReset(stream, frame);
-					callback.succeeded();
-				} catch (Exception x) {
-					callback.failed(x);
-				}
-			}
-             /// unused
-			override
-			void onReset(Stream stream, ResetFrame frame) {
-				logInfo("onReset2");
-			}
+                    onReset(stream, frame);
+                    callback.succeeded();
+                } catch (Exception x) {
+                    callback.failed(x);
+                }
+            }
             /// unused
-			override
-			bool onIdleTimeout(Stream stream, Exception x) {
+            override
+            void onReset(Stream stream, ResetFrame frame) {
+                logInfo("onReset2");
+            }
+            /// unused
+            override
+            bool onIdleTimeout(Stream stream, Exception x) {
                 logInfo("timeout");
-				return true;
-			}
+                return true;
+            }
             /// unused
-			override string toString()
-			{
-				return super.toString();
-			}
+            override string toString()
+            {
+                return super.toString();
+            }
 
+            override void onHeaders(Stream stream, HeadersFrame frame) {
+                logInfo("client received headers ", frame.toString());
+            }
 
-
-            			override
-			void onHeaders(Stream stream, HeadersFrame frame) {
-				logInfo("client received headers ", frame.toString());
-			}
-
-			override
-			void onData(Stream stream, DataFrame frame, Callback callback) {
+            override void onData(Stream stream, DataFrame frame, Callback callback) {
               
                 auto bytes = cast(ubyte[])BufferUtils.toString(frame.getData());
                 if(bytes.length < 5)
@@ -212,7 +203,7 @@ class GrpcClient
                 auto result = new Result!(ubyte[])(bytes[5 .. $].dup);
                 dele(result);
                 logInfo("client received data " , result.result);
-			}
+            }
         });
 
         auto stream =  streampromise.get();
@@ -226,28 +217,27 @@ class GrpcClient
         grpc_data ~= len;
         grpc_data ~= data;
         DataFrame smallDataFrame = new DataFrame(stream.getId(),
-			ByteBuffer.wrap(cast(byte[])grpc_data), true);
+            ByteBuffer.wrap(cast(byte[])grpc_data), true);
 
         stream.data(smallDataFrame , new class NoopCallback {
 
-		override
-		void succeeded() {
-		}
+        override
+        void succeeded() {
+        }
 
-		override
-		void failed(Exception x) {
+        override
+        void failed(Exception x) {
             logInfo("sending failed");
-		}
-	});
+        }
+    });
     }
 
-
-
-protected:
-    string _host;
-    ushort _port;
-    HttpClient _client;
-    FuturePromise!(HttpClientConnection) _promise;
-    Http2Configuration  _http2Configuration;
-
+    protected
+    {
+        string _host;
+        ushort _port;
+        HttpClient _client;
+        FuturePromise!(HttpClientConnection) _promise;
+        Http2Configuration  _http2Configuration;
+    }
 }

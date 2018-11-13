@@ -1,27 +1,25 @@
 {
     "name": "hunt-grpc",
     "license": "Apache-2.0",
-    "copyright": "Copyright (C) 2015-2017 Shanghai Putao Technology Co., Ltd",
-    "description": "A high performance full-stack Web framework.",
-    "libs": [],
+    "copyright": "Copyright (C) 2015-2018 huntlabs.cn",
+    "description": "Grpc for D programming language, hunt-http library based.",
     "dependencies": {
-        "protobuf": "~>0.3.1",
-		"hunt-http":"~>0.0.4"
+        "hunt-http":"~>0.0.4",
+        "protobuf": "~>0.3.1"
     },
     "configurations":[
         {
             "name" : "hunt-grpc",
             "targetType": "library"
-    
         },
         {
             "targetName": "example",
             "name": "example",
             "targetType": "executable",
             "sourceFiles": [
-                "helloworld/example.d",
-                "helloworld/helloworld.d",
-                "helloworld/helloworldrpc.d"
+                "example/helloworld/example.d",
+                "example/helloworld/helloworld.d",
+                "example/helloworld/helloworldrpc.d"
             ]
         },
         {
@@ -29,10 +27,9 @@
             "name":"raw_example",
             "targetType": "executable",
             "sourceFiles": [
-                "helloworld/helloworld.d",
-                "helloworld/raw_example.d"
+                "example/helloworld/helloworld.d",
+                "example/helloworld/raw_example.d"
             ]
         }
-
     ]
 }

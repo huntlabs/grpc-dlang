@@ -1,6 +1,7 @@
 module grpc.GrpcServer;
 
 import std.stdio;
+import std.string;
 
 import hunt.http.codec.http.frame;
 import hunt.http.codec.http.model;
@@ -10,25 +11,18 @@ import hunt.http.server.HttpServer;
 import hunt.http.server.ServerHttpHandler;
 import hunt.http.server.ServerSessionListener;
 
-import std.string;
-
 import hunt.util.functional;
 import hunt.container;
-
 import hunt.logging;
+
 import grpc.GrpcService;
-
-
-
-
-
 
 alias Server = GrpcServer;
 class GrpcServer
 {
     this()
     {
-        	_http2Configuration = new Http2Configuration();
+            _http2Configuration = new Http2Configuration();
             _http2Configuration.setSecureConnectionEnabled(false);
             _http2Configuration.setFlowControlStrategy("simple");
             _http2Configuration.getTcpConfiguration().setTimeout(60 * 1000);
@@ -42,7 +36,7 @@ class GrpcServer
     void listen(string address , ushort port)
     {
         _server = new HttpServer(address, port, _http2Configuration, 
-	    new class ServerSessionListener {
+        new class ServerSessionListener {
 
             override
             Map!(int, int) onPreface(Session session) {
@@ -114,7 +108,7 @@ class GrpcServer
                         grpc_data ~= data;
 
                         DataFrame smallDataFrame = new DataFrame(stream.getId(),
-			            ByteBuffer.wrap(cast(byte[])grpc_data), false);
+                        ByteBuffer.wrap(cast(byte[])grpc_data), false);
                         
                         stream.data(smallDataFrame , Callback.NOOP);
                         
@@ -225,12 +219,12 @@ class GrpcServer
         _server.stop();
     }
 
-  
-
-    protected:
+    protected
+    {
         Http2Configuration      _http2Configuration;
         Map!(int, int)          _settings;
         HttpServer             _server;
         GrpcService[string]     _router;
+    }
 
 }

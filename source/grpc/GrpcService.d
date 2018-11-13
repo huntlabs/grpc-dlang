@@ -1,7 +1,5 @@
 module grpc.GrpcService;
 
-
-
 interface  GrpcService
 { 
     string getModule();
