@@ -104,17 +104,19 @@ class GrpcClient
     ubyte[] send(string path , ubyte[] data)
     {
         ubyte[] result;
+        bool recvd = false;
         sendAsync(path , data, (Result!(ubyte[]) data) {
             if(data.failed())
             {
                  throw data.cause();
             }
             result = data.result;
+            recvd = true;
         });
 
         uint tick = 0;
         import core.thread;
-        while(result.length == 0)
+        while(!recvd)
         {
             tick++;
             if(tick > 1000)
