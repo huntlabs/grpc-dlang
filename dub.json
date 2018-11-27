@@ -17,9 +17,9 @@
             "name": "example",
             "targetType": "executable",
             "sourceFiles": [
-                "example/helloworld/example.d",
-                "example/helloworld/helloworld.d",
-                "example/helloworld/helloworldrpc.d"
+                "examples/helloworld/example.d",
+                "examples/helloworld/helloworld.d",
+                "examples/helloworld/helloworldrpc.d"
             ]
         },
         {
@@ -27,8 +27,8 @@
             "name":"raw_example",
             "targetType": "executable",
             "sourceFiles": [
-                "example/helloworld/helloworld.d",
-                "example/helloworld/raw_example.d"
+                "examples/helloworld/helloworld.d",
+                "examples/helloworld/raw_example.d"
             ]
         }
     ]
