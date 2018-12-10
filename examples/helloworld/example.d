@@ -9,11 +9,11 @@ import std.stdio;
 
 class GreeterImpl : GreeterBase
 {
-    override HelloReply SayHello(HelloRequest request)
+    override Status SayHello( HelloRequest request , ref HelloReply reply)
     {
-        HelloReply reply = new HelloReply();
         reply.message = "hello " ~ request.name;
-        return reply;
+        logInfo(reply.message);
+        return Status.OK;
     }
 }
 
@@ -21,7 +21,7 @@ class GreeterImpl : GreeterBase
 void main()
 {
     string host = "0.0.0.0";
-    ushort port = 50051;
+    ushort port = 30051;
 
     Server server = new Server();
     server.listen(host , port);
@@ -37,8 +37,10 @@ void main()
     {
         HelloRequest request = new HelloRequest();
         request.name = name;
-        HelloReply reply = client.SayHello(request);
-        logError(reply.message);
+        HelloReply reply;
+        auto status  = client.SayHello(request , reply);
+        logInfo( status.errorCode ," " , reply.message);
     }
+    getchar();
 
 }

@@ -1,5 +1,6 @@
 module grpc.GrpcCode;
 
+
 string GetFunc(string funcstr)
 {
     import std.string;
@@ -12,53 +13,46 @@ string GetFunc(string funcstr)
     return myFunc;
 }
 
-string CM(O , string service , string funcs = __FUNCTION__)()
+string CM(string service , string funcs = __FUNCTION__)()
 {
     string func = GetFunc(funcs);
     string code = 
-    `auto data = cast(ubyte[])_channel.send("/`~ service ~`/`~func~`" ,request.toProtobuf.array);
-    auto reply = new `~ O.stringof ~`();
-    data.fromProtobuf!`~ O.stringof ~`(reply);
-    return reply;`;
+    `auto stream = _channel.createStream("/`~ service ~`/`~func~`");
+    stream.write(request , true);
+    while(stream.read(response)){}
+    return stream.finish();`;
     return code;
 }
 
-string CMA( O  , string service , string funcs = __FUNCTION__)()
+string CMA(O , string service , string funcs = __FUNCTION__)()
 {
     string func = GetFunc(funcs);
-    string code = `
-    _channel.sendAsync("`~service~`/`~func~`" , request.toProtobuf.array ,
-        (Result!(ubyte[]) data){
-            Result!`~ O.stringof ~` result;
-            if(data.failed)
-            {
-                result = new Result!`~O.stringof~`(data.cause());
-            }
-            else
-            {
-                auto reply = new `~O.stringof~`();
-                auto udata = data.result;
-                try{
-                    udata.fromProtobuf!`~O.stringof~`(reply);
-                }
-                catch(Throwable e)
-                {
-                    result = new Result!`~O.stringof~`(new GrpcDataErrorException(e.msg));
-                }
-                if(result is null)
-                    result = new Result!`~O.stringof~`(reply);
-            }
-            dele(result);
-        });`;
+    string code = 
+    `auto stream = _channel.createStream("/`~ service ~`/`~func~`");
+     stream.write(request , true);
+     new Thread((){
+         auto response = new `~O.stringof~`();
+         while(stream.read(response)){}
+         dele(stream.finish() , response);
+     }).start();`;
     return code;
 }
 
-string SM(I ,string method , string funcs = __FUNCTION__)()
+string SM(I , O , string method)()
 {
     string code = `case "`~method~`":
                 auto request = new `~I.stringof~`();
-                data.fromProtobuf!`~I.stringof~`(request);
-                auto reply = `~method~`(request);
-                return reply.toProtobuf.array;`;
+                auto response = new `~O.stringof~`();
+                while(stream.read(request)){} 
+                auto status = `~method~`(request,response);
+                stream.write(response);
+                return status;`;
+    return code;
+}
+
+string NONE(string method)()
+{
+    string code = `default:
+                  return new Status(StatusCode.NOT_FOUND , "not found this method:" ~ method ~ " in " ~ SERVICE);`;
     return code;
 }

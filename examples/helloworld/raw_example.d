@@ -9,6 +9,8 @@ import std.stdio;
 import std.array:array;
 
 
+
+
 import hunt.logging;
 
 class MyService : GrpcService
@@ -18,15 +20,18 @@ class MyService : GrpcService
         return "helloworld.Greeter";
     }
 
-    ubyte[] process(string method , ubyte[] data)
+    Status process(string method , GrpcStream stream)
     {
         HelloRequest request = new HelloRequest();
-        data.fromProtobuf!HelloRequest(request);
-
-        HelloReply reply = new HelloReply();
-        reply.message = "hello " ~ request.name;
-        logError(reply.message , reply.message.length);
-        return reply.toProtobuf.array;
+        logInfo(method , " " , " process ");
+        while(stream.read(request))
+        {
+            HelloReply reply = new HelloReply();
+            reply.message = "hello " ~ request.name;
+            logInfo(reply.message);
+            stream.write(reply);
+        }
+        return Status.OK;
     }
 }
 
@@ -36,7 +41,7 @@ class MyService : GrpcService
 void main() {
 
     string host = "0.0.0.0";
-    ushort port = 50051;
+    ushort port = 30051;
 
     GrpcServer server = new GrpcServer();
     server.listen(host , port);
@@ -48,21 +53,23 @@ void main() {
     client.connect("127.0.0.1" , port);
     HelloRequest request = new HelloRequest();
     request.name = "world";
-    ubyte[] data =  client.send("/helloworld.Greeter/SayHello" , request.toProtobuf.array);
-    HelloReply reply = new HelloReply();
-    data.fromProtobuf!HelloReply(reply);
-
-    logError(reply.message);
-
-    string[] test_name = ["1" , "2" , "3" , "4" , "5" , "6" , "7" , "8" , "9" , "0"];
-    foreach(name ; test_name)    
+    
+    for(size_t i = 0 ; i < 10 ; i++)
     {
-        HelloRequest request1 = new HelloRequest();
-        request1.name = name;
-        ubyte[] data1 =  client.send("/helloworld.Greeter/SayHello" ,request1.toProtobuf.array);
-        HelloReply reply1 = new HelloReply();
-        data1.fromProtobuf!HelloReply(reply1);
-        logError(reply1.message);
+        auto stream =  client.createStream("/helloworld.Greeter/SayHello");
+        stream.write(request, true);
+
+        HelloReply reply;
+        while(stream.read(reply))
+        {
+            logInfo(reply.message);
+        }
+        auto status = stream.finish();
+        logInfo(status.errorCode , " " , status.errorMessage);
     }
+
+    
+
+    getchar();
 
 }

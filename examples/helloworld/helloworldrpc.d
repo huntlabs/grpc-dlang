@@ -11,7 +11,7 @@ public import hunt.net.Result;
 import grpc;
 import google.protobuf;
 import hunt.logging;
-
+import core.thread;
 
 
 
@@ -22,12 +22,12 @@ class GreeterClient
         _channel = channel;
     }
 
-    HelloReply SayHello( HelloRequest request)
+    Status SayHello( HelloRequest request ,ref HelloReply response)
     {
-        mixin(CM!(HelloReply , GreeterBase.SERVICE));
+        mixin(CM!(GreeterBase.SERVICE));
     }
 
-    void SayHello( HelloRequest request , void delegate(Result!HelloReply reply) dele)
+    void SayHello( HelloRequest request , void delegate(Status status , HelloReply response) dele)
     {
         mixin(CMA!(HelloReply , GreeterBase.SERVICE));
     }
@@ -45,17 +45,15 @@ class GreeterBase: GrpcService
         return SERVICE;
     }
 
-    HelloReply SayHello(HelloRequest ){ return new HelloReply(); }
+    Status SayHello( HelloRequest , ref HelloReply ){ return Status.OK; }
 
-    ubyte[] process(string method , ubyte[] data)
+    Status process(string method , GrpcStream stream)
     {
         switch(method)
         {
-            mixin(SM!(HelloRequest , "SayHello"));
+            mixin(SM!(HelloRequest , HelloReply , "SayHello"));
 
-            default:
-            logWarning("none method ", method);
-                return null;
+            mixin(NONE!("SayHello"));
         }
     }
 }

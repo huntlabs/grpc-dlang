@@ -27,6 +27,7 @@ import hunt.container;
 import hunt.net;
 
 import grpc.GrpcException;
+import grpc.GrpcStream;
 
 alias Channel = GrpcClient;
 class GrpcClient
@@ -55,8 +56,7 @@ class GrpcClient
     {
         _host = host;
         _port = port;
-        _client.connect(host , port , _promise,
-        new class ClientHttp2SessionListener {
+        _client.connect(host , port , _promise, new class ClientHttp2SessionListener {
 
             override
             Map!(int, int) onPreface(Session session) {
@@ -101,50 +101,15 @@ class GrpcClient
         });
     }
 
-    ubyte[] send(string path , ubyte[] data)
+    
+    GrpcStream createStream(string path)
     {
-        ubyte[] result;
-        bool recvd = false;
-        sendAsync(path , data, (Result!(ubyte[]) data) {
-            if(data.failed())
-            {
-                 throw data.cause();
-            }
-            result = data.result;
-            recvd = true;
-        });
-
-        uint tick = 0;
-        import core.thread;
-        while(!recvd)
-        {
-            tick++;
-            if(tick > 1000)
-                break;
-
-            Thread.sleep(dur!"msecs"(10));
-        }
-
-        if(tick > 1000)
-        {
-            throw new GrpcTimeoutException("timeout");
-        }
-        
-        return result;
-    }
-
-
-    void sendAsync(string path , ubyte[] data , void delegate(Result!(ubyte[]) ) dele)
-    {
-
         HttpFields fields = new HttpFields();
         fields.put("te", "trailers");
         fields.put("content-type" ,"application/grpc+proto");
         fields.put("grpc-accept-encoding" , "identity");
         fields.put("accept-encoding" , "identity");
 
-        // new stream
-        //header
         MetaData.Request metaData = new MetaData.Request("POST", HttpScheme.HTTP,
             new HostPortHttpField(format("%s:%d", _host, _port)), 
             path, HttpVersion.HTTP_2, fields);
@@ -153,10 +118,10 @@ class GrpcClient
         auto client = cast(Http2ClientConnection)conn;
         auto streampromise = new FuturePromise!(Stream)();
         auto http2session = client.getHttp2Session();
+        auto grpcstream = new GrpcStream();
 
         http2session.newStream(new HeadersFrame(metaData , null , false), streampromise , new class StreamListener {
-            /// unused
-                override
+
             StreamListener onPush(Stream stream,
                     PushPromiseFrame frame) {
                 logInfo("onPush");
@@ -188,51 +153,21 @@ class GrpcClient
             override string toString()
             {
                 return super.toString();
-            }
+            }   
 
             override void onHeaders(Stream stream, HeadersFrame frame) {
-                logInfo("client received headers ", frame.toString());
+                grpcstream.onHeaders(stream , frame);
             }
 
             override void onData(Stream stream, DataFrame frame, Callback callback) {
-              
-                auto bytes = cast(ubyte[])BufferUtils.toString(frame.getData());
-                if(bytes.length < 5)
-                {
-                    dele(new Result!(ubyte[])(new GrpcDataErrorException("data len error")));
-                    return;
-                }               
-                auto result = new Result!(ubyte[])(bytes[5 .. $].dup);
-                dele(result);
-                logInfo("client received data " , result.result);
+                grpcstream.onData(stream , frame);
             }
         });
 
-        auto stream =  streampromise.get();
-        
-        ubyte compress = 0;
-        
-        import std.bitmanip;
-        ubyte[4] len = nativeToBigEndian(cast(int)data.length);
-        ubyte[] grpc_data;
-        grpc_data ~= compress;
-        grpc_data ~= len;
-        grpc_data ~= data;
-        DataFrame smallDataFrame = new DataFrame(stream.getId(),
-            ByteBuffer.wrap(cast(byte[])grpc_data), true);
-
-        stream.data(smallDataFrame , new class NoopCallback {
-
-        override
-        void succeeded() {
-        }
-
-        override
-        void failed(Exception x) {
-            logInfo("sending failed");
-        }
-    });
+        grpcstream.attachStream(streampromise.get());
+        return grpcstream;
     }
+
 
     protected
     {

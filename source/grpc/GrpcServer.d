@@ -16,6 +16,9 @@ import hunt.container;
 import hunt.logging;
 
 import grpc.GrpcService;
+import grpc.GrpcStream;
+import grpc.Status;
+import grpc.StatusCode;
 
 alias Server = GrpcServer;
 class GrpcServer
@@ -56,11 +59,7 @@ class GrpcServer
                 auto method = arr[2];
 
                 auto service =  mod in _router ;
-                if(service == null)
-                {    
-                    logError("no router " , mod , " " , path ," " , arr);
-                    return null;
-                }
+            
 
                 HttpFields fields = new HttpFields();
                 fields.put("content-type" ,"application/grpc+proto");
@@ -69,18 +68,25 @@ class GrpcServer
 
                 auto response = new MetaData.Response(HttpVersion.HTTP_2 , 200 , fields);
                 auto res_header = new HeadersFrame(stream.getId(),response , null , false);
-                HttpFields end_fileds = new HttpFields();
-                end_fileds.put("grpc-status" , "0");
-                auto res_end_header =
-                 new HeadersFrame(stream.getId(),new MetaData(HttpVersion.HTTP_2, end_fileds), null , true);
+                stream.headers(res_header , Callback.NOOP);
 
-                logWarning("normal ...");
+                if(service == null)
+                {
+                    Status status = new Status(StatusCode.NOT_FOUND , "not found this module:" ~ mod);
+                    stream.headers(endHeaderFrame(status ,stream.getId()), Callback.NOOP);
+                    return null;
+                }
 
-                return new class StreamListener {
+
+                auto grpcstream = new GrpcStream();
+                grpcstream.attachStream(stream);
+
+
+                auto listener =  new class StreamListener {
 
                     override
                     void onHeaders(Stream stream, HeadersFrame frame) {
-                        infof("server received headers: %s", frame.getMetaData());
+                        grpcstream.onHeaders(stream , frame);
                     }
 
                     override
@@ -90,29 +96,7 @@ class GrpcServer
 
                     override
                     void onData(Stream stream, DataFrame frame, Callback callback) {
-                        infof("server received data %s, %s", BufferUtils.toString(frame.getData()), frame);
-                        
-                       
-                        stream.headers(res_header , Callback.NOOP);
-                        
-                        auto bytes = cast(ubyte[])BufferUtils.toString(frame.getData());
-                        logWarning("normal data..." , bytes);  
-                        auto data = (*service).process(method , bytes[5 .. $].dup);
-                        ubyte compress = 0;
-        
-                        import std.bitmanip;
-                        ubyte[4] len = nativeToBigEndian(cast(int)data.length);
-                        ubyte[] grpc_data;
-                        grpc_data ~= compress;
-                        grpc_data ~= len;
-                        grpc_data ~= data;
-
-                        DataFrame smallDataFrame = new DataFrame(stream.getId(),
-                        ByteBuffer.wrap(cast(byte[])grpc_data), false);
-                        
-                        stream.data(smallDataFrame , Callback.NOOP);
-                        
-                        stream.headers(res_end_header , Callback.NOOP);
+                        grpcstream.onData(stream , frame);
                         callback.succeeded();
                     }
 
@@ -127,12 +111,10 @@ class GrpcServer
 
                     override
                     void onReset(Stream stream, ResetFrame frame) {
-                        infof("server reseted: %s | %s", stream, frame);
                     }
 
                     override
                     bool onIdleTimeout(Stream stream, Exception x) {
-                        infof("idle timeout", x);
                         return true;
                     }
 
@@ -141,11 +123,17 @@ class GrpcServer
                     }
 
                 };
+                import std.parallelism;
+                auto t = task!(serviceTask , string , GrpcService , GrpcStream )(method , *service , grpcstream);
+                taskPool.put(t);
+
+                return listener;
+
             }
 
             override
             void onSettings(Session session, SettingsFrame frame) {
-                infof("server received settings: %s", frame);
+                
             }
 
             override
@@ -154,17 +142,15 @@ class GrpcServer
 
             override
             void onReset(Session session, ResetFrame frame) {
-                infof("server reset " ~ frame.toString());
+                
             }
 
             override
             void onClose(Session session, GoAwayFrame frame) {
-                infof("server closed " ~ frame.toString());
             }
 
             override
             void onFailure(Session session, Exception failure) {
-                errorf("server failure, %s", failure, session);
             }
 
             void onClose(Session session, GoAwayFrame frame, Callback callback)
