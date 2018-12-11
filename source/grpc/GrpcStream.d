@@ -77,7 +77,7 @@ class GrpcStream
         }
    }
 
-   void write(IN)(IN obj , bool end = false)
+   void write(IN)(IN obj , bool option = false)
    {  
         ubyte compress = 0;
         ubyte[] data = obj.toProtobuf.array;
@@ -87,7 +87,7 @@ class GrpcStream
         grpc_data ~= len;
         grpc_data ~= data;
         auto dataFrame = new DataFrame(stream.getId(),
-            ByteBuffer.wrap(cast(byte[])grpc_data), end);
+            ByteBuffer.wrap(cast(byte[])grpc_data), option);
         stream.data(dataFrame , new NoopCallback());
    }
 

@@ -53,7 +53,7 @@ class GreeterBase: GrpcService
         {
             mixin(SM!(HelloRequest , HelloReply , "SayHello"));
 
-            mixin(NONE!("SayHello"));
+            mixin(NONE());
         }
     }
 }

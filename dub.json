@@ -30,6 +30,16 @@
                 "examples/helloworld/helloworld.d",
                 "examples/helloworld/raw_example.d"
             ]
+        },
+        {
+            "targetName": "streamexample",
+            "name":"streamexample",
+            "targetType": "executable",
+            "sourceFiles": [
+                "examples/routeguide/route_guide.d",
+                "examples/routeguide/route_guiderpc.d",
+                "examples/routeguide/example.d"
+            ]
         }
     ]
 }
