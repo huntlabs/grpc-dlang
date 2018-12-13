@@ -73,9 +73,11 @@ dub build
  for example:
  ```shell
  dub build -c=example
+ ./example
  ```
  
  for streaming example:
  ```shell
  dub build -c=streamexample
+ ./streamexample -f ./examples/route_guide_db.json
  ```
