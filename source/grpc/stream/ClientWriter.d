@@ -7,10 +7,12 @@ import grpc.GrpcStream;
 
 class ClientWriter(W)
 {
-    this(GrpcStream stream , void delegate() dele)
+    this(R)(GrpcStream stream , ref R r)
     {
         this.stream = stream;
-        this.dele = dele;
+        this.dele = (){
+            while(stream.read(r)){}
+        };
     }
 
 

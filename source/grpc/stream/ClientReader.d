@@ -10,8 +10,9 @@ class ClientReader(R)
         this.stream = stream;
     }
 
-    bool read(R r)
+    bool read(out R r)
     {
+        r = new R();
         if(stream.read(r)){
             return true;
         }

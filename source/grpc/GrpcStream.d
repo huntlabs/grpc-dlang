@@ -62,19 +62,27 @@ class GrpcStream
 
    void onData(Stream stream, DataFrame frame) 
    {
-        auto bytes = cast(ubyte[])BufferUtils.toString(frame.getData());
-        /// no data
-        if(bytes.length < 5)
-        { 
-            return;
+       ubyte[] bytes;
+        try{
+            
+            bytes = cast(ubyte[])BufferUtils.toString(frame.getData());    
+            /// no data
         }
-        push(bytes[5 .. $]);
+        catch(Exception e)   {}
 
         if(frame.isEndStream())
         {
             end = true;
             push();
         }
+        if(bytes.length < 5)
+        { 
+            return;
+        }
+        push(bytes[5 .. $]);
+           
+        
+       
    }
 
    void write(IN)(IN obj , bool option = false)

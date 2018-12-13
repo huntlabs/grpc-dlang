@@ -22,7 +22,7 @@ class GreeterClient
         _channel = channel;
     }
 
-    Status SayHello( HelloRequest request ,ref HelloReply response)
+    Status SayHello( HelloRequest request ,out HelloReply response)
     {
         mixin(CM!(GreeterBase.SERVICE));
     }

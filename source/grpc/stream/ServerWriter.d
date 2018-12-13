@@ -14,8 +14,6 @@ class ServerWriter(W)
 
     bool write(W w , bool option = false)
     {
-        if(stream.end)
-            return false;
         stream.write(w , option);
         return true;
     }

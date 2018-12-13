@@ -56,7 +56,7 @@ class RouteGuideClient
 }
 
 
-class RouteGuideBase
+class RouteGuideBase : GrpcService
 {
     enum SERVICE  = "routeguide.RouteGuide";
     string getModule()

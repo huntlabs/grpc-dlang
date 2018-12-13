@@ -10,8 +10,9 @@ class ServerReaderWriter(R , W)
         this.stream = stream;
     }
 
-    bool read(R r)
+    bool read(out R r)
     {
+        r = new R();
         if(stream.read(r)){
             return true;
         }
@@ -21,8 +22,6 @@ class ServerReaderWriter(R , W)
 
     bool write(W w , bool option = false)
     {
-        if(stream.end)
-            return false;
         stream.write(w , option);
         return true;
     }

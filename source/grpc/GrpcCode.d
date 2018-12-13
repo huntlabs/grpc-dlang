@@ -42,9 +42,7 @@ string CM2(O , string service , string funcs = __FUNCTION__)()
     string code = 
     `auto stream = _channel.createStream("/`~ service ~`/`~func~`");
     
-    auto writer = new ClientWriter!`~O.stringof~`(stream , (){
-        while(stream.read(response)){}
-    });
+    auto writer = new ClientWriter!`~O.stringof~`(stream ,response);
     return writer;`;
     return code;
 }
