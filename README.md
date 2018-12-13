@@ -20,11 +20,10 @@ protoc -I ./doc/ --grpc_out=./example --plugin=protoc-gen-grpc=grpc_dlang_plugin
 
   class GreeterImpl : GreeterBase
   {
-      override HelloReply SayHello(HelloRequest request)
+      override Status SayHello(HelloRequest request , ref HelloReply reply)
       {
-          HelloReply reply = new HelloReply();
           reply.message = "hello " ~ request.name;
-          return reply;
+          return Status.OK;
       }
   }
 
@@ -42,14 +41,26 @@ protoc -I ./doc/ --grpc_out=./example --plugin=protoc-gen-grpc=grpc_dlang_plugin
   import helloworld.helloworld;
   import helloworld.helloworldrpc;
   import grpc;
+  import std.stdio;
 
   auto channel = new Channel("127.0.0.1" , 50051);
   GreeterClient client = new GreeterClient(channel);
 
   HelloRequest request = new HelloRequest();
+  HelloReply reply = new HelloReply();
   request.name = "test";
-  HelloReply reply = client.SayHello(request);
+  auto status = client.SayHello(request , reply);
+  if(status.ok())
+  {
+     writeln(reply.message);
+  }
   ```
+  
+ 
+  
+  # example for streaming
+  We implemented the offical example [RouteGuide](https://github.com/huntlabs/hunt-grpc/tree/master/examples/routeguide)  
+  offical link:https://github.com/grpc/grpc/blob/master/examples/cpp/cpptutorial.md
  # build
 
 for library:
@@ -60,4 +71,9 @@ dub build
  for example:
  ```shell
  dub build -c=example
+ ```
+ 
+ for streaming example:
+ ```shell
+ dub build -c=streamexample
  ```
