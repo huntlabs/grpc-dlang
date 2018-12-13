@@ -59,7 +59,9 @@ protoc -I ./doc/ --grpc_out=./example --plugin=protoc-gen-grpc=grpc_dlang_plugin
  
   
   # example for streaming
-  We implemented the offical example [RouteGuide](https://github.com/huntlabs/hunt-grpc/tree/master/examples/routeguide)  
+  We implemented the offical example [RouteGuide](https://github.com/huntlabs/hunt-grpc/tree/master/examples/routeguide) 
+  
+  
   offical link:https://github.com/grpc/grpc/blob/master/examples/cpp/cpptutorial.md
  # build (dmd only , some bug in ldc)
 
