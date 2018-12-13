@@ -4,12 +4,12 @@ Grpc for D programming language, hunt-http library based.
 # Generating protobuf code
 https://github.com/dcarp/protobuf-d
 
-protoc --plugin=protoc-gen-d --d_out=./example -I ./doc ./doc/helloworld.proto
+protoc --plugin=protoc-gen-d --d_out=./examples -I ./examples ./examples/helloworld.proto
 
 # Generating grpc client and server code
 https://github.com/huntlabs/google-grpc
  
-protoc -I ./doc/ --grpc_out=./example --plugin=protoc-gen-grpc=grpc_dlang_plugin ./doc/protos/helloworld.proto
+protoc -I ./examples --grpc_out=./examples --plugin=protoc-gen-grpc=grpc_dlang_plugin ./examples/helloworld.proto
  
  # example-server
  
