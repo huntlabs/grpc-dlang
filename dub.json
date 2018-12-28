@@ -1,11 +1,12 @@
 {
     "name": "hunt-grpc",
     "license": "Apache-2.0",
-    "copyright": "Copyright (C) 2015-2018 huntlabs.cn",
+    "copyright": "Copyright (C) 2015-2018 huntlabs.net",
+    "authors": ["HuntLabs.net"]
     "description": "Grpc for D programming language, hunt-http library based.",
     "dependencies": {
         "hunt-http":"~>0.0.4",
-        "protobuf": "~>0.3.1"
+        "protobuf": "~>0.4.0"
     },
     "configurations":[
         {
