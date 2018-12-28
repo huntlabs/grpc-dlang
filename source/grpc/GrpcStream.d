@@ -22,6 +22,7 @@ import std.array;
 import std.container : DList;
 import std.bitmanip;
 import std.conv;
+import std.stdint;
 
 import grpc.StatusCode;
 
@@ -79,7 +80,12 @@ class GrpcStream
         { 
             return;
         }
-        push(bytes[5 .. $]);
+        int32_t length = bigEndianToNative!int32_t(bytes[1 .. 5]);
+        if(length + 5 != bytes.length)
+        {
+            logError("compress " ,  bytes[0] , " not a complete packet");
+        }
+        push(bytes[5 .. $].dup);
            
         
        
