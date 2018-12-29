@@ -74,10 +74,11 @@ class GrpcStream
         if(frame.isEndStream())
         {
             end = true;
-            push();
         }
         if(bytes.length < 5)
         { 
+            if(end)
+                push();
             return;
         }
         int32_t length = bigEndianToNative!int32_t(bytes[1 .. 5]);
