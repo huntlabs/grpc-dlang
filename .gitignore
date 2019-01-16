@@ -28,3 +28,4 @@ docs/
 *.lst
 
 libhunt-grpc.a
+example

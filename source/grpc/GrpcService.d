@@ -6,7 +6,7 @@ import grpc.Status;
 import hunt.http.codec.http.frame;
 import hunt.http.codec.http.stream;
 import hunt.http.codec.http.model;
-import hunt.util.functional;
+import hunt.util.Common;
 
 import std.conv;
 

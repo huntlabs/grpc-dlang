@@ -7,8 +7,8 @@ import hunt.http.codec.http.stream;
 import hunt.http.codec.http.frame;
 import hunt.http.codec.http.model;
 
-import hunt.container;
-import hunt.util.functional;
+import hunt.collection;
+import hunt.util.Common;
 
 import hunt.logging;
 

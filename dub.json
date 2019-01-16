@@ -5,7 +5,7 @@
     "authors": ["HuntLabs.net"],
     "description": "Grpc for D programming language, hunt-http library based.",
     "dependencies": {
-        "hunt-http":"~>0.0.4",
+        "hunt-http":"~>0.0.13",
         "protobuf": "~>0.4.0"
     },
     "configurations":[

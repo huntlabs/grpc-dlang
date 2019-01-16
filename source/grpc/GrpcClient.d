@@ -1,7 +1,7 @@
 module grpc.GrpcClient;
 
-import hunt.concurrent.Promise;
-import hunt.concurrent.CompletableFuture;
+import hunt.concurrency.Promise;
+import hunt.concurrency.CompletableFuture;
 
 import hunt.logging;
 
@@ -20,10 +20,10 @@ import hunt.http.codec.http.model;
 import hunt.http.codec.http.stream;
 
 
-import hunt.util.functional;
-import hunt.concurrent.FuturePromise;
+import hunt.util.Common;
+import hunt.concurrency.FuturePromise;
 
-import hunt.container;
+import hunt.collection;
 import hunt.net;
 
 import grpc.GrpcException;
