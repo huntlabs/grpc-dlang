@@ -51,7 +51,7 @@ protoc -I ./examples --grpc_out=./examples --plugin=protoc-gen-grpc=grpc_dlang_p
   HelloRequest request = new HelloRequest();
   request.name = "test";
   HelloReply reply = client.SayHello(request);
-  if(status.ok())
+  if(reply !is null)
   {
      writeln(reply.message);
   }
