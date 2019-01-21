@@ -37,9 +37,8 @@ void main()
     {
         HelloRequest request = new HelloRequest();
         request.name = name;
-        HelloReply reply;
-        auto status  = client.SayHello(request , reply);
-        logInfo( status.errorCode ," " , reply.message);
+        HelloReply reply = client.SayHello(request );
+        logInfo(  reply.message);
     }
     getchar();
 

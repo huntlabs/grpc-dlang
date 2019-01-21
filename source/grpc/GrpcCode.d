@@ -13,14 +13,16 @@ string GetFunc(string funcstr)
     return myFunc;
 }
 
-string CM(string service , string funcs = __FUNCTION__)()
+string CM(O , string service , string funcs = __FUNCTION__)()
 {
     string func = GetFunc(funcs);
     string code = 
     `auto stream = _channel.createStream("/`~ service ~`/`~func~`");
     stream.write(request , true);
+    auto response = new `~O.stringof ~ `();
     while(stream.read(response)){}
-    return stream.finish();`;
+    auto status = stream.finish();
+    return response;`;
     return code;
 }
 

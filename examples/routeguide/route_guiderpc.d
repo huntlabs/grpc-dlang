@@ -20,9 +20,9 @@ class RouteGuideClient
         _channel = channel;
     }
 
-    Status GetFeature( Point request ,ref Feature response)
+    Feature GetFeature( Point request )
     {
-        mixin(CM!(RouteGuideBase.SERVICE));
+        mixin(CM!( Feature , RouteGuideBase.SERVICE));
     }
 
     void GetFeature( Point request , void delegate(Status status , Feature response) dele)

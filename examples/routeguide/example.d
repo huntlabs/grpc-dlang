@@ -13,7 +13,7 @@ import routeguide.route_guiderpc;
 
 import grpc;
 
-import hunt.util.serialize;
+import hunt.util.Serialize;
 import hunt.logging;
 
 __gshared Feature[] list;
@@ -158,8 +158,8 @@ RouteNote MakeRouteNote(string message,
 
  bool GetOneFeature(RouteGuideClient client , Point point , ref Feature feature ) {
     point = MakePoint(409146138, -746188906);
-    auto status = client.GetFeature(point , feature);
-    if(status.ok()){
+    feature = client.GetFeature(point);
+    if(feature is null){
         writeln("GetFeature rpc failed.");
         return false;
     }

@@ -22,9 +22,9 @@ class GreeterClient
         _channel = channel;
     }
 
-    Status SayHello( HelloRequest request ,out HelloReply response)
+    HelloReply SayHello( HelloRequest request)
     {
-        mixin(CM!(GreeterBase.SERVICE));
+        mixin(CM!( HelloReply,GreeterBase.SERVICE));
     }
 
     void SayHello( HelloRequest request , void delegate(Status status , HelloReply response) dele)
