@@ -49,9 +49,8 @@ protoc -I ./examples --grpc_out=./examples --plugin=protoc-gen-grpc=grpc_dlang_p
   GreeterClient client = new GreeterClient(channel);
 
   HelloRequest request = new HelloRequest();
-  HelloReply reply = new HelloReply();
   request.name = "test";
-  auto status = client.SayHello(request , reply);
+  HelloReply reply = client.SayHello(request);
   if(status.ok())
   {
      writeln(reply.message);
