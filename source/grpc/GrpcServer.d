@@ -25,20 +25,20 @@ class GrpcServer
 {
     this()
     {
-            _http2Configuration = new Http2Configuration();
-            _http2Configuration.setSecureConnectionEnabled(false);
-            _http2Configuration.setFlowControlStrategy("simple");
-            _http2Configuration.getTcpConfiguration().setTimeout(60 * 1000);
-            _http2Configuration.setProtocol(HttpVersion.HTTP_2.asString());
+            _HttpConfiguration = new HttpConfiguration();
+            _HttpConfiguration.setSecureConnectionEnabled(false);
+            _HttpConfiguration.setFlowControlStrategy("simple");
+            _HttpConfiguration.getTcpConfiguration().setTimeout(60 * 1000);
+            _HttpConfiguration.setProtocol(HttpVersion.HTTP_2.asString());
 
             _settings = new HashMap!(int, int)();
-            _settings.put(SettingsFrame.HEADER_TABLE_SIZE, _http2Configuration.getMaxDynamicTableSize());
-            _settings.put(SettingsFrame.INITIAL_WINDOW_SIZE, _http2Configuration.getInitialStreamSendWindow());
+            _settings.put(SettingsFrame.HEADER_TABLE_SIZE, _HttpConfiguration.getMaxDynamicTableSize());
+            _settings.put(SettingsFrame.INITIAL_WINDOW_SIZE, _HttpConfiguration.getInitialStreamSendWindow());
     }
 
     void listen(string address , ushort port)
     {
-        _server = new HttpServer(address, port, _http2Configuration, 
+        _server = new HttpServer(address, port, _HttpConfiguration, 
         new class ServerSessionListener {
 
             override
@@ -207,7 +207,7 @@ class GrpcServer
 
     protected
     {
-        Http2Configuration      _http2Configuration;
+        HttpConfiguration      _HttpConfiguration;
         Map!(int, int)          _settings;
         HttpServer             _server;
         GrpcService[string]     _router;

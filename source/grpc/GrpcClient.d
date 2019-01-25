@@ -41,14 +41,14 @@ class GrpcClient
 
     this()
     {
-        _http2Configuration = new Http2Configuration();
-        _http2Configuration.setSecureConnectionEnabled(false);
-        _http2Configuration.setFlowControlStrategy("simple");
-        _http2Configuration.getTcpConfiguration().setTimeout(60 * 1000);
-        _http2Configuration.setProtocol(HttpVersion.HTTP_2.asString());
+        _HttpConfiguration = new HttpConfiguration();
+        _HttpConfiguration.setSecureConnectionEnabled(false);
+        _HttpConfiguration.setFlowControlStrategy("simple");
+        _HttpConfiguration.getTcpConfiguration().setTimeout(60 * 1000);
+        _HttpConfiguration.setProtocol(HttpVersion.HTTP_2.asString());
 
         _promise = new FuturePromise!(HttpClientConnection)();
-        _client = new HttpClient(_http2Configuration);
+        _client = new HttpClient(_HttpConfiguration);
     }
 
 
@@ -61,8 +61,8 @@ class GrpcClient
             override
             Map!(int, int) onPreface(Session session) {
                 Map!(int, int) settings = new HashMap!(int, int)();
-                settings.put(SettingsFrame.HEADER_TABLE_SIZE, _http2Configuration.getMaxDynamicTableSize());
-                settings.put(SettingsFrame.INITIAL_WINDOW_SIZE, _http2Configuration.getInitialStreamSendWindow());
+                settings.put(SettingsFrame.HEADER_TABLE_SIZE, _HttpConfiguration.getMaxDynamicTableSize());
+                settings.put(SettingsFrame.INITIAL_WINDOW_SIZE, _HttpConfiguration.getInitialStreamSendWindow());
                 return settings;
             }
 
@@ -175,6 +175,6 @@ class GrpcClient
         ushort _port;
         HttpClient _client;
         FuturePromise!(HttpClientConnection) _promise;
-        Http2Configuration  _http2Configuration;
+        HttpConfiguration  _HttpConfiguration;
     }
 }

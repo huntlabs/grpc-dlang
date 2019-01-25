@@ -33,6 +33,7 @@ void main()
     
     string[] test_name = ["1" , "2" , "3" , "4" , "5" , "6" , "7" , "8" , "9" , "0"];
     
+    trace("444444");
     foreach(name ; test_name)    
     {
         HelloRequest request = new HelloRequest();
@@ -40,6 +41,9 @@ void main()
         HelloReply reply = client.SayHello(request );
         logInfo(  reply.message);
     }
+
+    trace("xxxxxxxxx");
     getchar();
+    trace("5555555555");
 
 }
