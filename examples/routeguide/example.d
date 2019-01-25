@@ -293,7 +293,7 @@ int main( string []args)
     auto oprions = getopt(args,"db_path|f","database file",&path);
     string data = readText(path);
     auto json = parseJSON(data);
-    list = toOBJ!(Feature[])(json);
+    list = toObject!(Feature[])(json);
     writeln("DB parsed, loaded " , list.length , " features.");
     string host = "0.0.0.0";
     ushort port = 30051;
