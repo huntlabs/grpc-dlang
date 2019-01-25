@@ -56,14 +56,14 @@ string getFeatureName( Point point,
 class RouteGuideImpl : RouteGuideBase
 {
     override Status GetFeature( Point point, ref Feature feature){ 
-        logInfo("GetFeature ", toJSON(point));
+        logInfo("GetFeature ", toJson(point));
         feature.name = getFeatureName(point , list);
         feature.location = point;
         return Status.OK; 
     }
 
     override Status ListFeatures(Rectangle rectangle , ServerWriter!Feature writer) {
-        logInfo("ListFeatures ", toJSON(rectangle));
+        logInfo("ListFeatures ", toJson(rectangle));
         auto lo = rectangle.lo;
         auto hi = rectangle.hi;
         long left = min(lo.longitude, hi.longitude);
