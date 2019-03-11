@@ -1,0 +1,3 @@
+[submodule "grpc-tools/deps/protobuf"]
+	path = grpc-tools/deps/protobuf
+	url = https://github.com/protocolbuffers/protobuf
