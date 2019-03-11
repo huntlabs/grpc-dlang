@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/huntlabs/hunt-grpc.svg?branch=master)](https://travis-ci.org/huntlabs/hunt-grpc)
 
-# hunt-grpc
+# DLang gRPC
 Grpc for D programming language, hunt-http library based.
 
 # Generating protobuf code
