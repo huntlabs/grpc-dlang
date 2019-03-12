@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/huntlabs/hunt-grpc.svg?branch=master)](https://travis-ci.org/huntlabs/hunt-grpc)
+[![Build Status](https://travis-ci.org/huntlabs/grpc-dlang.svg?branch=master)](https://travis-ci.org/huntlabs/hunt-grpc)
 
 # DLang gRPC
 Grpc for D programming language, hunt-http library based.
@@ -10,7 +10,7 @@ protoc --plugin=protoc-gen-d --d_out=./examples -I ./examples ./examples/hellowo
 
 # Generating grpc client and server code
 ```shell
-git submodule update --init
+git submodule update --init --recursive
 cd compiler
 mkdir build
 cd build
