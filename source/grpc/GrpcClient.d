@@ -56,6 +56,7 @@ class GrpcClient
     {
         _host = host;
         _port = port;
+        logInfo("host : ",host," port :",port);
         _client.connect(host , port , _promise, new class ClientHttp2SessionListener {
 
             override

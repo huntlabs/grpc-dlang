@@ -102,14 +102,14 @@ class GrpcStream
         grpc_data ~= len;
         grpc_data ~= data;
         auto dataFrame = new DataFrame(stream.getId(),
-            ByteBuffer.wrap(cast(byte[])grpc_data), option);
+            BufferUtils.toBuffer(cast(byte[])grpc_data), option);
         stream.data(dataFrame , new NoopCallback());
    }
 
    void writesdone()
    {
        auto dataFrame = new DataFrame(stream.getId() ,
-       ByteBuffer.wrap(null) , true);
+      BufferUtils.toBuffer(cast(byte[])[]) , true);
        stream.data(dataFrame , new NoopCallback());
    }
 
