@@ -42,8 +42,7 @@ void main()
         logInfo(  reply.message);
     }
 
-    trace("xxxxxxxxx");
+    trace("Press any key to exist");
     getchar();
-    trace("5555555555");
 
 }
