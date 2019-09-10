@@ -112,9 +112,6 @@ enum StatusCode {
   /// Unrecoverable data loss or corruption.
   DATA_LOSS = 15,
 
-  /// read data timeout . default expiretime 4s
-  READ_TIME_OUT = 20,
-
   /// Force users to include a default branch:
   DO_NOT_USE = -1
 };

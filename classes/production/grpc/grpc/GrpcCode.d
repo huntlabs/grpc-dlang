@@ -1,7 +1,6 @@
 module grpc.GrpcCode;
 
 
-
 string GetFunc(string funcstr)
 {
     import std.string;
@@ -19,7 +18,7 @@ string CM(O , string service , string funcs = __FUNCTION__)()
     string func = GetFunc(funcs);
     string code = 
     `auto stream = _channel.createStream("/`~ service ~`/`~func~`");
-    stream.write(request , false);
+    stream.write(request , true);
     auto response = new `~O.stringof ~ `();
     while(stream.read(response)){}
     auto status = stream.finish();
@@ -27,18 +26,12 @@ string CM(O , string service , string funcs = __FUNCTION__)()
     return code;
 }
 
-//auto response = new `~O.stringof ~ `();
-/*
- while(stream.read(response)){}
-    auto status = stream.finish();
-*/
-
 string CM1(O , string service , string funcs = __FUNCTION__)()
 {
     string func = GetFunc(funcs);
     string code = 
     `auto stream = _channel.createStream("/`~ service ~`/`~func~`");
-    stream.write(request , false);
+    stream.write(request , true);
     auto reader = new ClientReader!`~O.stringof~`(stream);
     return reader;`;
     return code;
@@ -75,8 +68,12 @@ string CMA(O , string service , string funcs = __FUNCTION__)()
     string func = GetFunc(funcs);
     string code = 
     `auto stream = _channel.createStream("/`~ service ~`/`~func~`");
-     stream.setCallBack(dele);
-     stream.write(request , false);`;
+     stream.write(request , true);
+     new Thread((){
+         auto response = new `~O.stringof~`();
+         while(stream.read(response)){}
+         dele(stream.finish() , response);
+     }).start();`;
     return code;
 }
 
@@ -85,13 +82,12 @@ string SM(I , O , string method)()
     string code = `case "`~method~`":
                 auto request = new `~I.stringof~`();
                 auto response = new `~O.stringof~`();
-                complete.fromProtobuf! `~I.stringof~`(request);
+                while(stream.read(request)){} 
                 auto status = `~method~`(request,response);
-                stream.write(response,false);
+                stream.write(response);
                 return status;`;
     return code;
 }
-
 
 /// server stream
 string SM1(I , O , string method)()

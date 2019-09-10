@@ -42,15 +42,6 @@ class Status
         return _code == StatusCode.OK;
     }
 
-    void setStatusCode (StatusCode code)
-    {
-        _code = code;
-    }
-
-    void setErrorMessage(string msg)
-    {
-        _error_message = msg;
-    }
     
     private:
 

@@ -7,13 +7,12 @@ module helloworld.helloworldrpc;
 
 import helloworld.helloworld;
 import std.array;
-public import hunt.net.Result;
+//import hunt.net.Result;
 import grpc;
 import google.protobuf;
 import hunt.logging;
 import core.thread;
-
-
+import std.stdio;
 
 class GreeterClient
 {
@@ -27,15 +26,39 @@ class GreeterClient
         mixin(CM!( HelloReply,GreeterBase.SERVICE));
     }
 
-    void SayHello( HelloRequest request , void delegate(Status status , HelloReply response) dele)
+    HelloReply SayGoodBye( HelloRequest request)
+    {
+        mixin(CM!( HelloReply,GreeterBase.SERVICE));
+    }
+
+    void SayHello( HelloRequest request , void delegate(ubyte[] complete) dele)
     {
         mixin(CMA!(HelloReply , GreeterBase.SERVICE));
     }
 
+    void SayGoodBye( HelloRequest request , void delegate(ubyte[] complete) dele)
+    {
+        mixin(CMA!(HelloReply , GreeterBase.SERVICE));
+    }
+
+    void  onDataSayHello (ubyte[] complete)
+    {
+        HelloReply resp = new HelloReply();
+        complete.fromProtobuf!HelloReply(resp);
+        tracef("^^^^^^^^^^^^resp:%s",resp.message);
+    }
+
+    void  onDataSayGoodBye (ubyte[] complete)
+    {
+        HelloReply resp = new HelloReply();
+        complete.fromProtobuf!HelloReply(resp);
+        tracef("^^^^^^^^^^^^resp:%s",resp.message);
+    }
 
     private:
     Channel _channel;
 }
+
 
 class GreeterBase: GrpcService
 {
@@ -46,16 +69,19 @@ class GreeterBase: GrpcService
     }
 
     Status SayHello( HelloRequest , ref HelloReply ){ return Status.OK; }
+    Status SayGoodBye( HelloRequest , ref HelloReply ){ return Status.OK; }
 
-    Status process(string method , GrpcStream stream)
+
+
+    Status process(string method ,   GrpcStream stream , ubyte[] complete)
     {
         switch(method)
         {
             mixin(SM!(HelloRequest , HelloReply , "SayHello"));
-
+            mixin(SM!(HelloRequest , HelloReply , "SayGoodBye"));
             mixin(NONE());
         }
+        //return status;
     }
 }
-
 

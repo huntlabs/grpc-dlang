@@ -6,7 +6,7 @@ import std.string;
 import hunt.http.codec.http.frame;
 import hunt.http.codec.http.model;
 import hunt.http.codec.http.stream;
-import hunt.http.server;
+
 import hunt.http.server.HttpServer;
 import hunt.http.server.ServerHttpHandler;
 import hunt.http.server.ServerSessionListener;
@@ -19,26 +19,16 @@ import grpc.GrpcService;
 import grpc.GrpcStream;
 import grpc.Status;
 import grpc.StatusCode;
-import core.thread;
-import std.concurrency;
-import core.sys.posix.signal : bsd_signal;
-import core.stdc.stdlib : exit;
-
-
-extern(C) void handleTermination(int)
-{
-
-}
 
 alias Server = GrpcServer;
 class GrpcServer
 {
     this()
     {
-            _HttpConfiguration = new HttpServerOptions();
-            _HttpConfiguration.setSecureConnectionEnabled(true);
+            _HttpConfiguration = new HttpConfiguration();
+            _HttpConfiguration.setSecureConnectionEnabled(false);
             _HttpConfiguration.setFlowControlStrategy("simple");
-            //_HttpConfiguration.getTcpConfiguration().setTimeout(60 * 1000);
+            _HttpConfiguration.getTcpConfiguration().setTimeout(60 * 1000);
             _HttpConfiguration.setProtocol(HttpVersion.HTTP_2.asString());
 
             _settings = new HashMap!(int, int)();
@@ -46,41 +36,37 @@ class GrpcServer
             _settings.put(SettingsFrame.INITIAL_WINDOW_SIZE, _HttpConfiguration.getInitialStreamSendWindow());
     }
 
-
-
-
-
-
-
     void listen(string address , ushort port)
     {
-        _server = new HttpServer(address, port, _HttpConfiguration, new class ServerSessionListener {
+        _server = new HttpServer(address, port, _HttpConfiguration, 
+        new class ServerSessionListener {
 
             override
             Map!(int, int) onPreface(Session session) {
                 infof("server received preface: %s", session);
                 return _settings;
             }
+
             override
             StreamListener onNewStream(Stream stream, HeadersFrame frame) {
                 infof("server created new stream: %d", stream.getId());
                 infof("server created new stream headers: %s", frame.getMetaData().toString());
-                auto request = cast(HttpRequest)frame.getMetaData();
+                auto request = cast(MetaData.Request)frame.getMetaData();
 
                 string path = request.getURI().getPath();
-
                 auto arr = path.split("/");
                 auto mod = arr[1];
                 auto method = arr[2];
+
                 auto service =  mod in _router ;
             
 
                 HttpFields fields = new HttpFields();
-                //fields.put("content-type" ,"application/grpc+proto");
-                //fields.put("grpc-accept-encoding" , "identity");
-                //fields.put("accept-encoding" , "identity");
+                fields.put("content-type" ,"application/grpc+proto");
+                fields.put("grpc-accept-encoding" , "identity");
+                fields.put("accept-encoding" , "identity");
 
-                auto response = new HttpResponse(HttpVersion.HTTP_2 , 200 , fields);
+                auto response = new MetaData.Response(HttpVersion.HTTP_2 , 200 , fields);
                 auto res_header = new HeadersFrame(stream.getId(),response , null , false);
                 stream.headers(res_header , Callback.NOOP);
 
@@ -92,7 +78,7 @@ class GrpcServer
                 }
 
 
-                auto grpcstream = new  GrpcStream();
+                auto grpcstream = new GrpcStream();
                 grpcstream.attachStream(stream);
 
 
@@ -110,20 +96,13 @@ class GrpcServer
 
                     override
                     void onData(Stream stream, DataFrame frame, Callback callback) {
-                        ubyte[] complete = grpcstream.onDataTransitTask(stream , frame);
+                        grpcstream.onData(stream , frame);
                         callback.succeeded();
-                        if (complete !is null)
-                        {
-                            import std.parallelism;
-                            auto t = task!(serviceTask , string , GrpcService , GrpcStream ,ubyte [] )(method , *service , grpcstream , complete);
-                            taskPool.put(t);
-                            //service.process(method , grpcstream ,complete);
-                        }
                     }
 
                     void onReset(Stream stream, ResetFrame frame, Callback callback) {
                         try {
-                            grpcstream.reSet();
+                            onReset(stream, frame);
                             callback.succeeded();
                         } catch (Exception x) {
                             callback.failed(x);
@@ -144,8 +123,9 @@ class GrpcServer
                     }
 
                 };
-
-
+                import std.parallelism;
+                auto t = task!(serviceTask , string , GrpcService , GrpcStream )(method , *service , grpcstream);
+                taskPool.put(t);
 
                 return listener;
 
@@ -215,11 +195,8 @@ class GrpcServer
         _router[service.getModule()] = service;
     }
 
-
-
     void start()
     {
-        bsd_signal(13, &handleTermination);
         _server.start();
     }
 
@@ -230,7 +207,7 @@ class GrpcServer
 
     protected
     {
-        HttpServerOptions      _HttpConfiguration;
+        HttpConfiguration      _HttpConfiguration;
         Map!(int, int)          _settings;
         HttpServer             _server;
         GrpcService[string]     _router;
