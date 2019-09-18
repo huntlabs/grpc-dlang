@@ -27,6 +27,7 @@ docs/
 # Code coverage
 *.lst
 
+grpc.iml
 libhunt-grpc.a
 example
 raw_example
