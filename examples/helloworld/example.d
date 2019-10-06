@@ -53,7 +53,7 @@ void main()
         client.SayHello(request,&client.onDataSayHello);
 
         client.SayGoodBye(request,&client.onDataSayGoodBye);
-    }  catch (TimeoutException e) {
+    }  catch (GrpcTimeoutException e) {
         channel.destroy();
         // reConnect;
     }  catch (Exception e)

@@ -185,7 +185,8 @@ class GrpcStream
                     _condition.mutex().unlock();
                if (!_condition.wait(dur!"seconds"(5)))
                {
-                   throw new TimeoutException();
+                    import grpc.GrpcException : GrpcTimeoutException;
+                    throw new GrpcTimeoutException("Timedout after 5 seconds.");
                }
            }
            else
