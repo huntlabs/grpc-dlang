@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/huntlabs/grpc-dlang.svg?branch=master)](https://travis-ci.org/huntlabs/hunt-grpc)
+[![Build Status](https://travis-ci.org/huntlabs/grpc-dlang.svg?branch=master)](https://travis-ci.org/huntlabs/grpc-dlang)
 
-# DLang gRPC
+# grpc-dlang
 Grpc for D programming language, hunt-http library based.
 
 # Generating protobuf code
@@ -20,72 +20,73 @@ make -j4
  
 protoc -I ./examples --grpc_out=./examples --plugin=protoc-gen-grpc=grpc_dlang_plugin ./examples/helloworld.proto
  
- # example-server
+# example-server
  
 ```D
-  import helloworld.helloworld;
-  import helloworld.helloworldrpc;
-  import grpc;
+import grpc;
 
-  class GreeterImpl : GreeterBase
-  {
-      override Status SayHello(HelloRequest request , ref HelloReply reply)
-      {
-          reply.message = "hello " ~ request.name;
-          return Status.OK;
-      }
-  }
+import helloworld.helloworld;
+import helloworld.helloworldrpc;
 
-  string host = "0.0.0.0";
-  ushort port = 50051;
+class GreeterImpl : GreeterBase
+{
+    override Status SayHello(HelloRequest request , ref HelloReply reply)
+    {
+        reply.message = "hello " ~ request.name;
+        return Status.OK;
+    }
+}
 
-  Server server = new Server();
-  server.listen(host , port);
-  server.register( new GreeterImpl());
-  server.start();
+string host = "0.0.0.0";
+ushort port = 50051;
+
+auto server = new Server();
+server.listen(host , port);
+server.register( new GreeterImpl());
+server.start();
 ```
 
 # example-client
 ```D
-  import helloworld.helloworld;
-  import helloworld.helloworldrpc;
-  import grpc;
-  import std.stdio;
+import helloworld.helloworld;
+import helloworld.helloworldrpc;
+import grpc;
+import std.stdio;
 
-  auto channel = new Channel("127.0.0.1" , 50051);
-  GreeterClient client = new GreeterClient(channel);
+auto channel = new Channel("127.0.0.1" , 50051);
+GreeterClient client = new GreeterClient(channel);
 
-  HelloRequest request = new HelloRequest();
-  request.name = "test";
-  HelloReply reply = client.SayHello(request);
-  if(reply !is null)
-  {
-     writeln(reply.message);
-  }
-  ```
-  
+auto request = new HelloRequest();
+request.name = "test";
+
+HelloReply reply = client.SayHello(request);
  
-  
-  # example for streaming
-  We implemented the offical example [RouteGuide](https://github.com/huntlabs/hunt-grpc/tree/master/examples/routeguide) 
-  
-  
-  offical link:https://github.com/grpc/grpc/blob/master/examples/cpp/cpptutorial.md
- # build (dmd only , some bug in ldc)
+if(reply !is null)
+{
+   writeln(reply.message);
+}
+```
+
+# example for streaming
+We implemented the offical example [RouteGuide](https://github.com/huntlabs/hunt-grpc/tree/master/examples/routeguide) 
+
+offical link:https://github.com/grpc/grpc/blob/master/examples/cpp/cpptutorial.md
+
+# build (dmd only , some bug in ldc)
 
 for library:
 ```shell
 dub build
- ```
+```
 
- for example:
- ```shell
- dub build -c=example
- ./example
- ```
+for example:
+```shell
+dub build -c=example
+./example
+```
  
- for streaming example:
- ```shell
- dub build -c=streamexample
- ./streamexample -f ./examples/route_guide_db.json
- ```
+for streaming example:
+```shell
+dub build -c=streamexample
+./streamexample -f ./examples/route_guide_db.json
+```
