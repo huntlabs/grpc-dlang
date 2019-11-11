@@ -229,9 +229,9 @@ public:
 		{
 			auto dep = file->dependency(i);
 			if(dep->package() != "")
-				cos.WriteString("import " + dep->package() + "." + grpc_generator::StripProto(dep->name()) + ";\n");
+				cos.WriteString("import " + dep->package() + "." + grpc_generator::StripProtoAndPath(dep->name()) + ";\n");
 			else
-				cos.WriteString("import " + grpc_generator::StripProto(dep->name()) + ";\n");
+				cos.WriteString("import " + grpc_generator::StripProtoAndPath(dep->name()) + ";\n");
 		}
 
 		cos.WriteString("\n\n");
