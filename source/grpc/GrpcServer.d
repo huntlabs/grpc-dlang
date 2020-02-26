@@ -46,15 +46,11 @@ class GrpcServer
             _settings.put(SettingsFrame.INITIAL_WINDOW_SIZE, _HttpConfiguration.getInitialStreamSendWindow());
     }
 
-
-
-
-
-
-
-    void listen(string address , ushort port)
+    void listen(string host , ushort port)
     {
-        _server = new HttpServer(address, port, _HttpConfiguration, new class ServerSessionListener {
+        _HttpConfiguration.setHost(host);
+        _HttpConfiguration.setPort(port);
+        _server = new HttpServer( _HttpConfiguration, new class ServerSessionListener {
 
             override
             Map!(int, int) onPreface(Session session) {
@@ -115,7 +111,8 @@ class GrpcServer
                         if (complete !is null)
                         {
                             import std.parallelism;
-                            auto t = task!(serviceTask , string , GrpcService , GrpcStream ,ubyte [] )(method , *service , grpcstream , complete);
+                            auto t = task!(serviceTask , string , GrpcService , GrpcStream , 
+                                    ubyte [])(method , *service , grpcstream , complete);
                             taskPool.put(t);
                             //service.process(method , grpcstream ,complete);
                         }
@@ -144,8 +141,6 @@ class GrpcServer
                     }
 
                 };
-
-
 
                 return listener;
 
@@ -207,7 +202,7 @@ class GrpcServer
             bool onIdleTimeout(Session session) {
                 return false;
             }
-        }, new ServerHttpHandlerAdapter(), null);
+        }, new ServerHttpHandlerAdapter(_HttpConfiguration), null);
     }
 
     void register(GrpcService service)

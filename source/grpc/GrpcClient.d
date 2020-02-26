@@ -21,6 +21,11 @@ import hunt.http.codec.http.frame;
 import hunt.http.codec.http.model;
 import hunt.http.codec.http.stream;
 
+import hunt.http.HttpFields;
+import hunt.http.HttpRequest;
+import hunt.http.HttpScheme;
+import hunt.http.client.HttpClientRequest;
+
 import hunt.util.Common;
 import hunt.concurrency.FuturePromise;
 
@@ -34,9 +39,13 @@ import core.thread;
 import hunt.collection.HashMap;
 import std.parallelism;
 
-
+import hunt.http.HttpVersion;
 
 alias Channel = GrpcClient;
+
+/**
+ * 
+ */
 class GrpcClient {
 
     enum int DEFAULT_RETRY_TIMES = 100;
@@ -48,12 +57,11 @@ class GrpcClient {
     }
 
     this() {
-       // _HttpConfiguration = new HttpConfiguration();
         _HttpConfiguration = new HttpClientOptions();
         _HttpConfiguration.setSecureConnectionEnabled(false);
         _HttpConfiguration.setFlowControlStrategy("simple");
         //_HttpConfiguration.getTcpConfiguration().setStreamIdleTimeout(60 * 1000);
-        _HttpConfiguration.setProtocol(HttpVersion.HTTP_2.asString());
+        _HttpConfiguration.setProtocol(HttpVersion.HTTP_2.toString());
         _HttpConfiguration.setRetryTimes(DEFAULT_RETRY_TIMES);
         _HttpConfiguration.setRetryInterval(DEFAULT_RETRY_INTERVAL);
         _promise = new FuturePromise!(HttpClientConnection)();
@@ -82,7 +90,10 @@ class GrpcClient {
             //fields.put( "grpc-accept-encoding", "identity");
             //fields.put( "accept-encoding", "identity");
 
-            HttpRequest metaData = new HttpRequest( "POST",HttpScheme.HTTP, new HostPortHttpField( format( "%s:%d", _host, _port)), path, HttpVersion.HTTP_2, fields);
+            HttpRequest metaData = new HttpRequest( "POST", HttpScheme.HTTP, 
+                // new HostPortHttpField( format( "%s:%d", _host, _port)), 
+                _host, _port,
+                path, HttpVersion.HTTP_2, fields);
 
             auto conn = _promise.get();
             auto client = cast(Http2ClientConnection) conn;
@@ -91,62 +102,63 @@ class GrpcClient {
             auto grpcstream = new GrpcStream();
 
             // dfmt off
-            http2session.newStream( new HeadersFrame( metaData , null , false), streampromise , new class StreamListener {
-
-                StreamListener onPush(Stream stream,
-                PushPromiseFrame frame) {
-                    logInfo( "onPush");
-                    return null;
-                }
-                /// unused
-                override
-                void onReset(Stream stream, ResetFrame frame, Callback callback) {
-                    logInfo( "onReset");
-                    try {
-                        onReset( stream, frame);
-                        callback.succeeded();
-                    } catch (Exception x) {
-                        callback.failed( x);
+            http2session.newStream( new HeadersFrame( metaData , null , false), streampromise , 
+                new class StreamListener {
+                    StreamListener onPush(Stream stream,
+                    PushPromiseFrame frame) {
+                        logInfo( "onPush");
+                        return null;
                     }
-                }
-                /// unused
-                override
-                void onReset(Stream stream, ResetFrame frame) {
-                    logInfo( "onReset2");
-                }
-                /// unused
-                override
-                bool onIdleTimeout(Stream stream, Exception x) {
-                    logInfo( "timeout");
-                    return true;
-                }
-                /// unused
-                override string toString()
-                {
-                    return super.toString();
-                }
-
-                override void onHeaders(Stream stream, HeadersFrame frame) {
-                    grpcstream.onHeaders( stream , frame);
-                }
-
-                override void onData(Stream stream, DataFrame frame, Callback callback) {
-                    if (grpcstream.isAsyn())
+                    /// unused
+                    override
+                    void onReset(Stream stream, ResetFrame frame, Callback callback) {
+                        logInfo( "onReset");
+                        try {
+                            onReset( stream, frame);
+                            callback.succeeded();
+                        } catch (Exception x) {
+                            callback.failed( x);
+                        }
+                    }
+                    /// unused
+                    override
+                    void onReset(Stream stream, ResetFrame frame) {
+                        logInfo( "onReset2");
+                    }
+                    /// unused
+                    override
+                    bool onIdleTimeout(Stream stream, Exception x) {
+                        logInfo( "timeout");
+                        return true;
+                    }
+                    /// unused
+                    override string toString()
                     {
-                         ubyte[] complete = grpcstream.onDataTransitTask(stream , frame);
-                         callback.succeeded();
-                         if (complete !is null && !stream.isClosed())
-                         {
-                             grpcstream.onCallBack(complete);
-                         }
-                    } else
-                    {
-                        grpcstream.onDataTransitQueue(stream , frame);
-                         callback.succeeded();
+                        return super.toString();
                     }
 
+                    override void onHeaders(Stream stream, HeadersFrame frame) {
+                        grpcstream.onHeaders( stream , frame);
+                    }
+
+                    override void onData(Stream stream, DataFrame frame, Callback callback) {
+                        if (grpcstream.isAsyn())
+                        {
+                            ubyte[] complete = grpcstream.onDataTransitTask(stream , frame);
+                            callback.succeeded();
+                            if (complete !is null && !stream.isClosed())
+                            {
+                                grpcstream.onCallBack(complete);
+                            }
+                        } else
+                        {
+                            grpcstream.onDataTransitQueue(stream , frame);
+                            callback.succeeded();
+                        }
+
+                    }
                 }
-            });
+            );
 
             // dfmt on
             grpcstream.attachStream( streampromise.get());
