@@ -141,7 +141,7 @@ static void GenerateService(const std::string &module , CodedOutputStream &cos,c
 	cos.WriteString("\n");
 	
 	/// service's process
-	cos.WriteString("\tStatus process(string method , GrpcStream stream)\n");
+	cos.WriteString("\tStatus process(string method , GrpcStream stream, ubyte[] complete)\n");
 	cos.WriteString("\t{\n");
 	cos.WriteString("\t\tswitch(method)\n");
 	cos.WriteString("\t\t{\n");
@@ -229,9 +229,9 @@ public:
 		{
 			auto dep = file->dependency(i);
 			if(dep->package() != "")
-				cos.WriteString("import " + dep->package() + "." + grpc_generator::StripProto(dep->name()) + ";\n");
+				cos.WriteString("import " + dep->package() + "." + grpc_generator::StripProtoAndPath(dep->name()) + ";\n");
 			else
-				cos.WriteString("import " + grpc_generator::StripProto(dep->name()) + ";\n");
+				cos.WriteString("import " + grpc_generator::StripProtoAndPath(dep->name()) + ";\n");
 		}
 
 		cos.WriteString("\n\n");

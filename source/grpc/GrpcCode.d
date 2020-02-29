@@ -75,7 +75,7 @@ string CMA(O , string service , string funcs = __FUNCTION__)()
     string func = GetFunc(funcs);
     string code = 
     `auto stream = _channel.createStream("/`~ service ~`/`~func~`");
-     stream.setCallBack(dele);
+     stream.setCallBack(cast(void delegate(ubyte[]))dele);
      stream.write(request , false);`;
     return code;
 }
