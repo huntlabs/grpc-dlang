@@ -35,15 +35,15 @@ class GrpcServer
 {
     this()
     {
-            _HttpConfiguration = new HttpServerOptions();
-            _HttpConfiguration.setSecureConnectionEnabled(true);
-            _HttpConfiguration.setFlowControlStrategy("simple");
-            //_HttpConfiguration.getTcpConfiguration().setTimeout(60 * 1000);
-            _HttpConfiguration.setProtocol(HttpVersion.HTTP_2.asString());
+        _HttpConfiguration = new HttpServerOptions();
+        _HttpConfiguration.setSecureConnectionEnabled(true);
+        _HttpConfiguration.setFlowControlStrategy("simple");
+        //_HttpConfiguration.getTcpConfiguration().setTimeout(60 * 1000);
+        _HttpConfiguration.setProtocol(HttpVersion.HTTP_2.asString());
 
-            _settings = new HashMap!(int, int)();
-            _settings.put(SettingsFrame.HEADER_TABLE_SIZE, _HttpConfiguration.getMaxDynamicTableSize());
-            _settings.put(SettingsFrame.INITIAL_WINDOW_SIZE, _HttpConfiguration.getInitialStreamSendWindow());
+        _settings = new HashMap!(int, int)();
+        _settings.put(SettingsFrame.HEADER_TABLE_SIZE, _HttpConfiguration.getMaxDynamicTableSize());
+        _settings.put(SettingsFrame.INITIAL_WINDOW_SIZE, _HttpConfiguration.getInitialStreamSendWindow());
     }
 
     void listen(string host , ushort port)

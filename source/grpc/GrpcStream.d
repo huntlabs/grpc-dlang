@@ -258,6 +258,10 @@ class GrpcStream
         return _asyn;
     }
 
+    bool end() {
+        return _end;
+    }
+
     bool                _end;
     bool                _asyn;
     Condition           _condition;

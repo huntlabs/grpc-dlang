@@ -1,26 +1,64 @@
 [![Build Status](https://travis-ci.org/huntlabs/grpc-dlang.svg?branch=master)](https://travis-ci.org/huntlabs/grpc-dlang)
 
 # grpc-dlang
-Grpc for D programming language, hunt-http library based.
+gRPC implementation for D.
 
-# Generating protobuf code
-https://github.com/dcarp/protobuf-d
+### Building
 
-protoc --plugin=protoc-gen-d --d_out=./examples -I ./examples ./examples/helloworld.proto
-
-# Generating grpc client and server code
-```shell
-git submodule update --init --recursive
-cd compiler
-mkdir build
-cd build
-cmake ..
-make -j4
+### Building the protocol buffer compiler for D
+```sh
+$ dub build :protoc-gen-d
+$ sudo cp build/protoc-gen-d /usr/local/bin
 ```
+
+### Building the gRPC plugin for D
+
+```sh
+$ git submodule update --init --recursive
+# Update Git submodule to latest commit on origin
+# git submodule update --remote --merge
+$ cd compiler
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make -j4
+$ sudo cp deps/protobuf/protoc* /usr/local/bin
+$ sudo cp grpc_dlang_plugin /usr/local/bin
+```
+
+### Building the core library
+```sh
+cd grpc-dlang
+dub build
+```
+
+### Generating protobuf code
+```sh
+protoc --plugin=/usr/local/bin/protoc-gen-d --d_out=./examples -I ./examples ./examples/helloworld.proto
+```
+
+### Generating grpc client and server code
+```sh
+protoc --plugin=protoc-gen-grpc=/usr/local/bin/grpc_dlang_plugin -I ./examples --grpc_out=./examples ./examples/helloworld.proto
+```
+
+### Building the examples
+
+1. A simple demo
+```shell
+dub build -c=example
+```
+
+2. Demo for streaming
+```sh 
+dub build -c=streamexample
+./streamexample -f ./examples/route_guide_db.json
+```
+
+
+## Samples
  
-protoc -I ./examples --grpc_out=./examples --plugin=protoc-gen-grpc=grpc_dlang_plugin ./examples/helloworld.proto
- 
-# example-server
+### The server
  
 ```D
 import grpc;
@@ -46,7 +84,7 @@ server.register( new GreeterImpl());
 server.start();
 ```
 
-# example-client
+### The client
 ```D
 import helloworld.helloworld;
 import helloworld.helloworldrpc;
@@ -67,26 +105,9 @@ if(reply !is null)
 }
 ```
 
-# example for streaming
+### The streaming
 We implemented the offical example [RouteGuide](https://github.com/huntlabs/hunt-grpc/tree/master/examples/routeguide) 
 
-offical link:https://github.com/grpc/grpc/blob/master/examples/cpp/cpptutorial.md
+## Resources
+- [cpp tutorial](https://github.com/grpc/grpc/blob/master/examples/cpp/cpptutorial.md).
 
-# build (dmd only , some bug in ldc)
-
-for library:
-```shell
-dub build
-```
-
-for example:
-```shell
-dub build -c=example
-./example
-```
- 
-for streaming example:
-```shell
-dub build -c=streamexample
-./streamexample -f ./examples/route_guide_db.json
-```
