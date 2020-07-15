@@ -28,10 +28,7 @@ docs/
 *.lst
 
 grpc.iml
-libhunt-grpc.a
-example
-raw_example
 compiler/build
 examples/SimpleDemo/server
 examples/SimpleDemo/client
-streamexample
+examples/RouteGuideDemo/route-guide

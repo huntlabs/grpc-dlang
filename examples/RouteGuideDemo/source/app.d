@@ -289,7 +289,7 @@ int main( string []args)
 {
    
     string path; 
-    // Expect only arg: --db_path=path/to/route_guide_db.json.
+    // Usage: command --db_path=path/to/route_guide_db.json.
     auto oprions = getopt(args,"db_path|f","database file",&path);
     string data = readText(path);
     auto json = parseJSON(data);

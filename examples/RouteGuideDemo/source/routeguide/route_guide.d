@@ -5,7 +5,7 @@ module routeguide.route_guide;
 
 import google.protobuf;
 
-enum protocVersion = 3006001;
+enum protocVersion = 3012003;
 
 class Point
 {
