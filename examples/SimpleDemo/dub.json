@@ -1,0 +1,28 @@
+{
+	"name": "simple-demo",
+	"description": "A simple demo for gRPC.",
+    "copyright": "Copyright (C) 2018-2020, HuntLabs",
+    "homepage": "https://www.huntlabs.net",
+	"license": "Apache-2.0",
+	"dependencies": {
+		"grpc" :{"path": "../../"}
+	},
+	"configurations": [
+		{
+			"name": "client",
+			"targetName": "client",
+			"targetType": "executable",
+			"excludedSourceFiles": [
+				"source/server.d"
+			]
+		},
+		{
+			"name": "server",
+			"targetName": "server",
+			"targetType": "executable",
+			"excludedSourceFiles": [
+				"source/client.d"
+			]
+		}
+	]
+}

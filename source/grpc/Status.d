@@ -2,19 +2,13 @@ module grpc.Status;
 
 import grpc.StatusCode;
 
-
-
-class Status
-{
-   static this()
-   {
+class Status {
+    static this() {
         OK = new Status();
     }
 
-    this(StatusCode code = StatusCode.OK
-     , string error_message = string.init ,
-     string error_details = string.init)
-    {
+    this(StatusCode code = StatusCode.OK, string error_message = string.init,
+            string error_details = string.init) {
         _code = code;
         _error_message = error_message;
         _binary_error_details = error_details;
@@ -22,19 +16,15 @@ class Status
 
     static Status OK;
 
-
-    StatusCode errorCode()
-    {
+    StatusCode errorCode() {
         return _code;
     }
 
-    string errorMessage()
-    {
+    string errorMessage() {
         return _error_message;
     }
 
-    string error_details()
-    {
+    string error_details() {
         return _binary_error_details;
     }
 
@@ -42,19 +32,17 @@ class Status
         return _code == StatusCode.OK;
     }
 
-    void setStatusCode (StatusCode code)
-    {
+    void setStatusCode(StatusCode code) {
         _code = code;
     }
 
-    void setErrorMessage(string msg)
-    {
+    void setErrorMessage(string msg) {
         _error_message = msg;
     }
-    
-    private:
 
-    StatusCode  _code;
-    string      _error_message;
-    string      _binary_error_details;
+private:
+
+    StatusCode _code;
+    string _error_message;
+    string _binary_error_details;
 }

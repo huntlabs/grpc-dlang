@@ -14,6 +14,7 @@ import hunt.http.codec.http.model;
 import hunt.util.Common;
 
 import std.conv;
+import hunt.logging.ConsoleLogger;
 
 HeadersFrame endHeaderFrame(Status status , int streamId)
 {
@@ -24,24 +25,9 @@ HeadersFrame endHeaderFrame(Status status , int streamId)
     return  new HeadersFrame(streamId, new HttpMetaData(HttpVersion.HTTP_2, end_fileds), null , true);
 }
 
-
-void serviceTask(string method, GrpcService service , GrpcStream stream , ubyte[] complete)
-{
-    if (!stream.isClosed()){
-        service.process(method , stream ,complete);
-    }
-}
-
-void taskCallBack(GrpcStream stream , ubyte[] complete)
-{
-    if (stream !is null)
-    {
-        stream.onCallBack(complete);
-    }
-}
-
 interface  GrpcService
 { 
     string getModule();
     Status process(string method ,  GrpcStream stream, ubyte[] complete);
+    // Status process(string method ,  GrpcStream stream);
 }

@@ -32,3 +32,5 @@ libhunt-grpc.a
 example
 raw_example
 compiler/build
+examples/SimpleDemo/server
+examples/SimpleDemo/client

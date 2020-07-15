@@ -30,14 +30,19 @@ import hunt.Exceptions;
 import grpc.GrpcService;
 
 
+alias StreamHandler = void delegate(ubyte[] data);
+
 class GrpcStream
 {
     alias void delegate(ubyte[] complete) Callback;
+
+    private StreamHandler _dataHandler;
 
     const ulong DataHeadLen = 5;
 
     this(bool asyn = false)
     {
+        // _stream = stream;
        _status = Status.OK;
        _end = false;
        _asyn = asyn;
@@ -46,6 +51,11 @@ class GrpcStream
        _read_buffer = new EvBuffer!ubyte;
        _dele = null;
        _write_mutex = new Mutex();
+    }
+
+    GrpcStream onDataReceived(StreamHandler handler) {
+        _dataHandler = handler;
+        return this;
     }
 
     void attachStream(  Stream stream)
@@ -64,7 +74,7 @@ class GrpcStream
    }
 
 
-   ubyte[] parserStream( DataFrame frame)
+   private ubyte[] parse( DataFrame frame)
    {
        ubyte[] bodyDetail = null;
 
@@ -101,6 +111,7 @@ class GrpcStream
                }
            } catch(Exception e){
                _read_buffer.reset();
+               warning(e);
                return null;
            }
        }
@@ -114,12 +125,31 @@ class GrpcStream
            _end = true;
        }
 
-       auto bodyDetail = parserStream(frame);
+       auto bodyDetail = parse(frame);
        if (bodyDetail !is null)
        {
            push(bodyDetail);
        }
    }
+
+   void onData(Stream stream, DataFrame frame) {
+       if(frame.isEndStream()) {
+           _end = true;
+       }
+
+        ubyte[] _incomingData = parse(frame);
+        if(_incomingData.length > 0) {
+            version(HUNT_DEBUG) tracef("%(%02X %)", _incomingData);
+            
+            if(_dataHandler !is null) {
+                _dataHandler(_incomingData);
+            }
+        } else {
+            warning("The data is not ready yet.");
+        }
+   }
+
+//    private ubyte[] _incomingData;
 
     ubyte[] onDataTransitTask(Stream stream, DataFrame frame)
    {
@@ -127,8 +157,14 @@ class GrpcStream
        {
            _end = true;
        }
-       return parserStream(frame);
+
+       ubyte[] incomingData = parse(frame);
+
+        version(HUNT_DEBUG) tracef("%(%02X %)", incomingData);
+
+       return incomingData;
    }
+
 
     void write(IN)(IN obj , bool option = false)
    {

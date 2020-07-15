@@ -36,11 +36,18 @@ class GrpcServer
     this()
     {
         _HttpConfiguration = new HttpServerOptions();
-        _HttpConfiguration.setSecureConnectionEnabled(true);
+        _HttpConfiguration.setSecureConnectionEnabled(false);
         _HttpConfiguration.setFlowControlStrategy("simple");
         //_HttpConfiguration.getTcpConfiguration().setTimeout(60 * 1000);
         _HttpConfiguration.setProtocol(HttpVersion.HTTP_2.asString());
 
+        _settings = new HashMap!(int, int)();
+        _settings.put(SettingsFrame.HEADER_TABLE_SIZE, _HttpConfiguration.getMaxDynamicTableSize());
+        _settings.put(SettingsFrame.INITIAL_WINDOW_SIZE, _HttpConfiguration.getInitialStreamSendWindow());
+    }
+
+    this(HttpServerOptions options) {
+        _HttpConfiguration = options;
         _settings = new HashMap!(int, int)();
         _settings.put(SettingsFrame.HEADER_TABLE_SIZE, _HttpConfiguration.getMaxDynamicTableSize());
         _settings.put(SettingsFrame.INITIAL_WINDOW_SIZE, _HttpConfiguration.getInitialStreamSendWindow());
@@ -87,9 +94,12 @@ class GrpcServer
                     return null;
                 }
 
-
-                auto grpcstream = new  GrpcStream();
+                GrpcStream grpcstream = new  GrpcStream();
                 grpcstream.attachStream(stream);
+
+                grpcstream.onDataReceived((ubyte[] data) {
+                    service.process(method, grpcstream, data);
+                });       
 
 
                 auto listener =  new class StreamListener {
@@ -106,16 +116,23 @@ class GrpcServer
 
                     override
                     void onData(Stream stream, DataFrame frame, Callback callback) {
-                        ubyte[] complete = grpcstream.onDataTransitTask(stream , frame);
-                        callback.succeeded();
-                        if (complete !is null)
-                        {
-                            import std.parallelism;
-                            auto t = task!(serviceTask , string , GrpcService , GrpcStream , 
-                                    ubyte [])(method , *service , grpcstream , complete);
-                            taskPool.put(t);
-                            //service.process(method , grpcstream ,complete);
+                        try {
+                            grpcstream.onData(stream , frame);                            
+                            callback.succeeded();
+                        } catch (Exception x) {
+                            callback.failed(x);
                         }
+
+                        // ubyte[] complete = grpcstream.onDataTransitTask(stream , frame);
+                        // callback.succeeded();
+                        // if (complete !is null)
+                        // {
+                        //     import std.parallelism;
+                        //     auto t = task!(serviceTask , string , GrpcService , GrpcStream , 
+                        //             ubyte [])(method , *service , grpcstream , complete);
+                        //     taskPool.put(t);
+                        //     //service.process(method , grpcstream ,complete);
+                        // }
                     }
 
                     void onReset(Stream stream, ResetFrame frame, Callback callback) {

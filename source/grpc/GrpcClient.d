@@ -101,6 +101,11 @@ class GrpcClient {
             auto http2session = client.getHttp2Session();
             auto grpcstream = new GrpcStream();
 
+            grpcstream.onDataReceived((ubyte[] data) {
+                grpcstream.onCallBack(data);
+                // service.process(method, grpcstream, data);
+            });    
+
             // dfmt off
             http2session.newStream( new HeadersFrame( metaData , null , false), streampromise , 
                 new class StreamListener {
@@ -142,6 +147,12 @@ class GrpcClient {
                     }
 
                     override void onData(Stream stream, DataFrame frame, Callback callback) {
+                        // try {
+                        //     grpcstream.onData(stream , frame);                            
+                        //     callback.succeeded();
+                        // } catch (Exception x) {
+                        //     callback.failed(x);
+                        // }                        
                         if (grpcstream.isAsyn())
                         {
                             ubyte[] complete = grpcstream.onDataTransitTask(stream , frame);

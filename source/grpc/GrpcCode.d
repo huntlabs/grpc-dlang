@@ -1,6 +1,6 @@
 module grpc.GrpcCode;
 
-
+alias GrpcReplyHandler(T) = void delegate(Status status, T response);
 
 string GetFunc(string funcstr)
 {
@@ -75,7 +75,13 @@ string CMA(O , string service , string funcs = __FUNCTION__)()
     string func = GetFunc(funcs);
     string code = 
     `auto stream = _channel.createStream("/`~ service ~`/`~func~`");
-     stream.setCallBack(dele);
+     stream.setCallBack((data) {
+         auto response = new `~O.stringof~`();
+         if(dele !is null) {
+            fromProtobuf!`~O.stringof~`(data, response);
+            dele(stream.finish() , response);
+         }
+     });
      stream.write(request , false);`;
     return code;
 }
@@ -99,7 +105,7 @@ string SM1(I , O , string method)()
     string code = `case "`~method~`":
                 auto request = new `~I.stringof~`();
                 auto writer = new ServerWriter!`~O.stringof~`(stream);
-                while(stream.read(request)){} 
+                complete.fromProtobuf! `~I.stringof~`(request);
                 auto status = `~method~`(request,writer);
                 return status;`;
     return code;
@@ -130,6 +136,6 @@ string SM3(I , O , string method)()
 string NONE()
 {
     string code = `default:
-                  return new Status(StatusCode.NOT_FOUND , "not found this method:" ~ method ~ " in " ~ SERVICE);`;
+                  return new Status(StatusCode.NOT_FOUND , "The method '" ~ method ~ "' is not found in " ~ SERVICE);`;
     return code;
 }
