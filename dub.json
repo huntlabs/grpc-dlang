@@ -1,46 +1,11 @@
 {
     "name": "grpc",
     "license": "Apache-2.0",
-    "copyright": "Copyright (C) 2018-2019 HuntLabs",
+    "copyright": "Copyright (C) 2018-2020 HuntLabs",
     "homepage": "https://www.huntlabs.net",
-    "description": "Grpc for D programming language, hunt-http library based.",
+    "description": "gRPC implementation for D programming language",
     "dependencies": {
-        "hunt-http": "~>0.4.0-beta.2",
-        "protobuf": "~>0.5.0"
-    },
-    "configurations":[
-        {
-            "name" : "grpc",
-            "targetType": "library"
-        },
-        {
-            "targetName": "example",
-            "name": "example",
-            "targetType": "executable",
-            "sourceFiles": [
-                "examples/helloworld/example.d",
-                "examples/helloworld/helloworld.d",
-                "examples/helloworld/helloworldrpc.d"
-            ]
-        },
-        {
-            "targetName": "raw_example",
-            "name":"raw_example",
-            "targetType": "executable",
-            "sourceFiles": [
-                "examples/helloworld/helloworld.d",
-                "examples/helloworld/raw_example.d"
-            ]
-        },
-        {
-            "targetName": "streamexample",
-            "name":"streamexample",
-            "targetType": "executable",
-            "sourceFiles": [
-                "examples/routeguide/route_guide.d",
-                "examples/routeguide/route_guiderpc.d",
-                "examples/routeguide/example.d"
-            ]
-        }
-    ]
+        "hunt-http": "~>0.6.2",
+        "protobuf": "~>0.6.2"
+    }
 }
