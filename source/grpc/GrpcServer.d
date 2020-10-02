@@ -21,9 +21,11 @@ import grpc.Status;
 import grpc.StatusCode;
 import core.thread;
 import std.concurrency;
-import core.sys.posix.signal : bsd_signal;
 import core.stdc.stdlib : exit;
 
+version(Posix) {
+    import core.sys.posix.signal : bsd_signal;
+}
 
 extern(C) void handleTermination(int)
 {
@@ -231,7 +233,7 @@ class GrpcServer
 
     void start()
     {
-        bsd_signal(13, &handleTermination);
+        version(Posix) bsd_signal(13, &handleTermination);
         _server.start();
     }
 
