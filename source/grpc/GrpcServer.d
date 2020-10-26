@@ -63,7 +63,9 @@ class GrpcServer
 
             override
             Map!(int, int) onPreface(Session session) {
-                infof("server received preface: %s", session);
+                version(HUNT_GRPC_DEBUG) {
+                    infof("server received preface: %s", session);
+                }
                 return _settings;
             }
             override

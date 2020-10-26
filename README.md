@@ -7,6 +7,8 @@ gRPC implementation for D.
 
 ### Building the protocol buffer compiler for D
 ```sh
+$ git clone https://github.com/dcarp/protobuf-d
+$ cd protobuf-d
 $ dub build :protoc-gen-d
 $ sudo cp build/protoc-gen-d /usr/local/bin
 ```
@@ -46,7 +48,10 @@ protoc --plugin=protoc-gen-grpc=/usr/local/bin/grpc_dlang_plugin -I ./examples -
 
 1. A simple demo
 ```shell
-dub build -c=example
+$ cd examples/SimpleDemo/proto/
+$ ./generate.sh
+$ cd ..
+$ ./build.sh 
 ```
 
 2. Demo for streaming
