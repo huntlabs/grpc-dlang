@@ -33,13 +33,14 @@ using grpc::protobuf::io::StringOutputStream;
 using grpc::protobuf::io::ZeroCopyOutputStream;
 
 
-
-
-
-
 static void GenerateService(const std::string &module , CodedOutputStream &cos,const ServiceDescriptor *service)
 {
 	/// client
+
+	cos.WriteString("/**\n");
+	cos.WriteString(" *\n");
+	cos.WriteString(" */\n");
+
 	cos.WriteString("class " + service->name() + "Client\n");
 	cos.WriteString("{\n");
 	cos.WriteString("\tthis(Channel channel)\n");
@@ -59,34 +60,34 @@ static void GenerateService(const std::string &module , CodedOutputStream &cos,c
 		
 		if (m->client_streaming() && m->server_streaming())
 		{
-			cos.WriteString("\tClientReaderWriter!(" + res + " ," + req + ") " + func + "(){\n");
-			cos.WriteString("\t\tmixin(CM3!(" + res + " , " + req + "  , " + service->name() + "Base.SERVICE));\n");
+			cos.WriteString("\tClientReaderWriter!(" + res + ", " + req + ") " + func + "(){\n");
+			cos.WriteString("\t\tmixin(CM3!(" + res + ", " + req + "  , " + service->name() + "Base.SERVICE));\n");
 			cos.WriteString("\t}\n");
 		}
 		else if (m->client_streaming())
 		{
-			cos.WriteString("\tClientWriter!" + req + " " + func + "( ref " + res + " response ){\n");
-			cos.WriteString("\t\tmixin(CM2!(" + req + " , " + service->name() + "Base.SERVICE));\n");
+			cos.WriteString("\tClientWriter!" + req + " " + func + "(ref " + res + " response ){\n");
+			cos.WriteString("\t\tmixin(CM2!(" + req + ", " + service->name() + "Base.SERVICE));\n");
 			cos.WriteString("\t}\n");
 		}
 		else if (m->server_streaming())
 		{
 			cos.WriteString("\tClientReader!" +res+ " " + func + "(" + req + " request ){\n");
-			cos.WriteString("\t\tmixin(CM1!(" + res + " , " + service->name() + "Base.SERVICE));\n");
+			cos.WriteString("\t\tmixin(CM1!(" + res + ", " + service->name() + "Base.SERVICE));\n");
 			cos.WriteString("\t}\n");
 		}
 		else {
 
-			cos.WriteString("\t"+ res + " " + func + "( " + req + " request)\n");
+			cos.WriteString("\t"+ res + " " + func + "(" + req + " request)\n");
 			cos.WriteString("\t{\n");
-			cos.WriteString("\t\tmixin(CM!("+ res +" , " + service->name() + "Base.SERVICE));\n");
+			cos.WriteString("\t\tmixin(CM!("+ res +", " + service->name() + "Base.SERVICE));\n");
 			cos.WriteString("\t}\n");
 
 			cos.WriteString("\n");
 
-			cos.WriteString("\tvoid " + func + "( " + req + " request , void delegate(Status status , " + res + " response) dele)\n");
+			cos.WriteString("\tvoid " + func + "(" + req + " request , void delegate(Status status, " + res + " response) dele)\n");
 			cos.WriteString("\t{\n");
-			cos.WriteString("\t\tmixin(CMA!(" + res + " , " + service->name() + "Base.SERVICE));\n");
+			cos.WriteString("\t\tmixin(CMA!(" + res + ", " + service->name() + "Base.SERVICE));\n");
 			cos.WriteString("\t}\n");
 
 			cos.WriteString("\n");
@@ -100,10 +101,15 @@ static void GenerateService(const std::string &module , CodedOutputStream &cos,c
 	cos.WriteString("\tChannel _channel;\n");
 
 	cos.WriteString("}\n");
-	cos.WriteString("\n");
+
+	cos.WriteString("\n\n");
 
 
 	/// service
+
+	cos.WriteString("/**\n");
+	cos.WriteString(" *\n");
+	cos.WriteString(" */\n");
 	cos.WriteString("class " + service->name() + "Base: GrpcService\n");
 	cos.WriteString("{\n");
 	cos.WriteString("\tenum SERVICE  = \"" + module + "." + service->name() + "\";");
@@ -123,25 +129,25 @@ static void GenerateService(const std::string &module , CodedOutputStream &cos,c
 		auto func = m->name();
 		if (m->client_streaming() && m->server_streaming())
 		{
-			cos.WriteString("\tStatus " + func + "(ServerReaderWriter!(" + req + " , " + res + ")){ return Status.OK; }\n");
+			cos.WriteString("\tStatus " + func + "(ServerReaderWriter!(" + req + ", " + res + ")){ return Status.OK; }\n");
 		}
 		else if (m->client_streaming())
 		{
-			cos.WriteString("\tStatus " + func + "(ServerReader!" + req + " , ref " + res + "){ return Status.OK; }\n");
+			cos.WriteString("\tStatus " + func + "(ServerReader!" + req + ", ref " + res + "){ return Status.OK; }\n");
 		}
 		else if (m->server_streaming())
 		{
-			cos.WriteString("\tStatus " + func + "(" + req + " , ServerWriter!" + res + "){ return Status.OK; }\n");
+			cos.WriteString("\tStatus " + func + "(" + req + " req, ServerWriter!" + res + " res){ return Status.OK; }\n");
 		}
 		else{
-			cos.WriteString("\tStatus " + func + "(" + req + " , ref " + res + "){ return Status.OK; }\n");
+			cos.WriteString("\tStatus " + func + "(" + req + " req, ref " + res + " res){ return Status.OK; }\n");
 		}
 	}
 
 	cos.WriteString("\n");
 	
 	/// service's process
-	cos.WriteString("\tStatus process(string method , GrpcStream stream, ubyte[] complete)\n");
+	cos.WriteString("\tStatus process(string method, GrpcStream stream, ubyte[] complete)\n");
 	cos.WriteString("\t{\n");
 	cos.WriteString("\t\tswitch(method)\n");
 	cos.WriteString("\t\t{\n");
@@ -153,19 +159,19 @@ static void GenerateService(const std::string &module , CodedOutputStream &cos,c
 		auto func = m->name();
 		if (m->client_streaming() && m->server_streaming())
 		{
-			cos.WriteString("\t\t\tmixin(SM3!(" + req + " , " + res + " , \"" + func + "\"));\n");
+			cos.WriteString("\t\t\tmixin(SM3!(" + req + ", " + res + " , \"" + func + "\"));\n");
 		}
 		else if (m->client_streaming())
 		{
-			cos.WriteString("\t\t\tmixin(SM2!(" + req + " , " + res + " , \"" + func + "\"));\n");
+			cos.WriteString("\t\t\tmixin(SM2!(" + req + ", " + res + " , \"" + func + "\"));\n");
 		}
 		else if (m->server_streaming())
 		{
-			cos.WriteString("\t\t\tmixin(SM1!(" + req + " , " + res + " , \"" + func + "\"));\n");
+			cos.WriteString("\t\t\tmixin(SM1!(" + req + ", " + res + " , \"" + func + "\"));\n");
 		}
 		else
 		{ 
-			cos.WriteString("\t\t\tmixin(SM!(" + req + " , " +res+ " , \"" + func + "\"));\n");
+			cos.WriteString("\t\t\tmixin(SM!(" + req + ", " +res+ " , \"" + func + "\"));\n");
 		}
 	}				
 	
@@ -195,44 +201,42 @@ public:
 		}
 
 		/// filename
+		
 		grpc::string filename = grpc_generator::StripProto(file->name());
-		CodedOutputStream cos(context->Open(filename + "rpc.d"));
+		grpc::string moduleName = grpc_generator::ProtoBaseName(file->name());
+		CodedOutputStream cos(context->Open(filename + "Rpc.d"));
+
+		cos.WriteString("// Generated by the gRPC-dlang plugin.\n\n");
+
 		/// module
-		{	
-			grpc::string module = "module " + file->package() + "." + filename + "rpc;\n";
-			cos.WriteString(module);
-		}
+		grpc::string module = "module " + file->package() + "." + moduleName + "Rpc;\n";
+		cos.WriteString(module);
 
-		cos.WriteString("\n\n");
-
-		/// 
-		{
-			cos.WriteString("// Generated by the gRPC dlang plugin.\n");
-		}
-
-		cos.WriteString("\n\n");
+		cos.WriteString("\n");
 
 		/// import fixed file
-		{
-			cos.WriteString("import " + file->package() + "." + filename + ";\n");
-			cos.WriteString("import std.array;\n");
-			cos.WriteString("import grpc;\n");
-			cos.WriteString("import google.protobuf;\n");
-			cos.WriteString("import hunt.logging;\n");
-			cos.WriteString("import core.thread;\n");
-		}
-
-		cos.WriteString("\n\n");
+		cos.WriteString("import " + file->package() + "." + moduleName + ";\n");
 
 		/// import dep next
 		for(int i = 0 ; i < file->dependency_count() ; i++ )
 		{
 			auto dep = file->dependency(i);
+			grpc::string moduleName = grpc_generator::ProtoBaseName(dep->name());
+
 			if(dep->package() != "")
-				cos.WriteString("import " + dep->package() + "." + grpc_generator::StripProto(dep->name()) + ";\n");
+				cos.WriteString("import " + dep->package() + "." + moduleName + ";\n");
 			else
-				cos.WriteString("import " + grpc_generator::StripProto(dep->name()) + ";\n");
+				cos.WriteString("import " + moduleName + ";\n");
 		}
+
+		cos.WriteString("\n");
+		cos.WriteString("import grpc;\n");
+		cos.WriteString("import google.protobuf;\n");
+		cos.WriteString("import hunt.logging;\n\n");
+		cos.WriteString("import core.thread;\n");
+		cos.WriteString("import std.array;\n");
+		cos.WriteString("import std.traits;\n");
+		
 
 		cos.WriteString("\n\n");
 

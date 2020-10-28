@@ -58,6 +58,20 @@ inline grpc::string StripProto(grpc::string filename) {
   return filename;
 }
 
+inline grpc::string ProtoBaseName(grpc::string filename) {
+  if (!StripSuffix(&filename, ".protodevel")) {
+    StripSuffix(&filename, ".proto");
+  }
+
+  #if _WIN32
+    grpc::string::size_type iPos = filename.find_last_of('\\')+1;
+  #else 
+    grpc::string::size_type iPos = filename.find_last_of('/')+1;
+  #endif
+	filename = filename.substr(iPos, filename.length() - iPos);
+  return filename;
+}
+
 inline grpc::string StringReplace(grpc::string str, const grpc::string& from,
                                   const grpc::string& to, bool replace_all) {
   size_t pos = 0;
