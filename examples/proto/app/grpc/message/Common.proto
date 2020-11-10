@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+// option java_multiple_files = true;
+// option java_package = "app.grpc.Common";
+// option java_outer_classname = "app.grpc.Common";
+// option objc_class_prefix = "";
+
+package app.grpc.message;
+
+
+enum ErrorCode
+{
+    ERR_NONE = 0;
+    ERR_USERNOTFOUND = 1;
+    ERR_DB = 2;
+
+    ERR_SYSTEM = 10001;
+    ERR_SYSTEM_BUSY = 10002;
+    ERR_ILLEGAL_REQUEST = 10003;
+    ERR_IP_LIMIT = 10004;
+    ERR_ID_LIMIT = 10005;
+    ERR_URL_LIMIT = 10006;
+    ERR_LACK_PARAMETER = 10007;
+    ERR_ILLEGAL_PARAMETER = 10008;
+    ERR_IP_REQUEST_LIMIT = 10009;
+    ERR_IP_FREQUENTLY = 10010;
+    ERR_USER_REQUEST_LIMIT = 10011;
+    ERR_USER_FREQUENTLY = 10012;
+    ERR_APP_FREQUENTLY = 10013;
+    ERR_APP_REQUEST_LIMIT = 10014;
+    ERR_REMOTE_REQUEST = 10015;
+    ERR_REMOTE_RETURN = 10016;
+    ERR_BAD_CONFIG = 10017;
+    ERR_RESOURCES_MISS = 10018;
+
+    ERR_INVALID_TOKEN = 21000;
+    ERR_ILLEGAL_TOKEN = 21001;
+    ERR_TOKEN_EXPIRE = 21002;
+    ERR_USER_NOT_FOUND = 21101;
+    ERR_USER_NOT_OPEN = 21102;
+    ERR_DISABLE_USER = 21103;
+    ERR_PASSWORD_ERR = 21104;
+    ERR_CODE = 21105;
+    ERR_TEMP_TOKEN = 21307;
+}
+
+
+enum LoginMode
+{
+  ACCOUNT = 0;
+  MOBILE = 1;
+  TOKEN = 2;
+}
+
+enum ContactApplySrc
+{
+  SEARCHID                   = 0;
+  QRCODE                     = 1;
+}
+

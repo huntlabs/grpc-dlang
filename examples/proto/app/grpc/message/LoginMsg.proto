@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package app.grpc.message;
+
+import "app/grpc/message/Common.proto";
+import "app/grpc/message/User.proto";
+
+
+message LoginMsg
+{
+    User user = 1;
+    string message = 2;
+    ErrorCode code = 3;
+    uint64 clientId = 4;
+    string ossKey = 5;
+    string ossSecret = 6;
+    string ossEndpoint = 7;
+    string ossBucketName = 8;
+}

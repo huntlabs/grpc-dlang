@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package app.grpc.message;
+
+import "app/grpc/message/Common.proto";
+
+
+message User
+{
+    string id = 1;
+    string chatId = 2;
+    string name = 3;
+    string remask = 4;
+    string avatar = 5;
+    string gender = 6;
+    string birthday = 7;
+    int32 addValidation = 8;
+    string mobile = 9;
+    int64 lastMsgRead = 10;
+    string aliasName = 12;
+    string qrcode = 13;
+    // ContactApplySrc src = 14;
+}

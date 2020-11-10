@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package app.grpc.message;
+
+import "app/grpc/message/Common.proto";
+
+
+message AuthorizeMsg
+{
+    LoginMode loginMode = 1;
+    string accessToken = 2;
+    string appKey = 3;
+    uint64 clientId = 4;
+    uint32 src = 5;
+}
