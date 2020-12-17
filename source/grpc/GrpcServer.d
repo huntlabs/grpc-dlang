@@ -14,13 +14,16 @@ import hunt.http.server.ServerSessionListener;
 import hunt.util.Common;
 import hunt.collection;
 import hunt.logging;
+import hunt.system.Memory : totalCPUs;
 
 import grpc.GrpcService;
 import grpc.GrpcStream;
 import grpc.Status;
 import grpc.StatusCode;
-import core.thread;
+
 import std.concurrency;
+
+import core.thread;
 import core.stdc.stdlib : exit;
 
 version(Posix) {
@@ -32,7 +35,6 @@ extern(C) void handleTermination(int)
 
 }
 
-alias Server = GrpcServer;
 class GrpcServer
 {
     this()
@@ -40,6 +42,7 @@ class GrpcServer
         _HttpConfiguration = new HttpServerOptions();
         _HttpConfiguration.setSecureConnectionEnabled(false);
         _HttpConfiguration.setFlowControlStrategy("simple");
+        _HttpConfiguration.getTcpConfiguration().workerThreadSize = totalCPUs * 2;
         //_HttpConfiguration.getTcpConfiguration().setTimeout(60 * 1000);
         _HttpConfiguration.setProtocol(HttpVersion.HTTP_2.asString());
 
