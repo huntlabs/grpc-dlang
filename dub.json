@@ -1,11 +1,11 @@
 {
     "name": "grpc",
     "license": "Apache-2.0",
-    "copyright": "Copyright (C) 2018-2020 HuntLabs",
+    "copyright": "Copyright (C) 2018-2021 HuntLabs",
     "homepage": "https://www.huntlabs.net",
     "description": "gRPC implementation for D programming language",
     "dependencies": {
-        "hunt-http": "~>0.6.2",
+        "hunt-http": "~>0.7.0",
         "protobuf": "~>0.6.2"
     }
 }
