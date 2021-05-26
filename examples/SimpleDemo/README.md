@@ -19,3 +19,14 @@ Now test D client
 ```
 $ ./client
 ```
+
+
+# Python pyd client
+
+First make sure you have pyd (>= version 0.14.1) installed
+```
+$ cd source
+$ make pyd
+$ make run
+Hello client_pyd
+```
