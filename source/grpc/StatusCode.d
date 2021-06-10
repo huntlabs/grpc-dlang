@@ -40,10 +40,6 @@ enum StatusCode {
     /// (use UNAUTHENTICATED instead for those errors).
     PERMISSION_DENIED = 7,
 
-    /// The request does not have valid authentication credentials for the
-    /// operation.
-    UNAUTHENTICATED = 16,
-
     /// Some resource has been exhausted, perhaps a per-user quota, or perhaps the
     /// entire file system is out of space.
     RESOURCE_EXHAUSTED = 8,
@@ -111,6 +107,10 @@ enum StatusCode {
 
     /// Unrecoverable data loss or corruption.
     DATA_LOSS = 15,
+
+    /// The request does not have valid authentication credentials for the
+    /// operation.
+    UNAUTHENTICATED = 16,
 
     /// read data timeout . default expiretime 4s
     READ_TIME_OUT = 20,
