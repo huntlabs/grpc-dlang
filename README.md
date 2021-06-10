@@ -111,8 +111,9 @@ if(reply !is null)
 ```
 
 ### The streaming
-We implemented the offical example [RouteGuide](https://github.com/huntlabs/hunt-grpc/tree/master/examples/routeguide) 
+
+We implemented the offical example [RouteGuide](https://github.com/huntlabs/grpc-dlang/tree/master/examples/RouteGuideDemo).
 
 ## Resources
-- [cpp tutorial](https://github.com/grpc/grpc/blob/master/examples/cpp/cpptutorial.md).
 
+- [cpp quickstart](https://grpc.io/docs/languages/cpp/quickstart/).
