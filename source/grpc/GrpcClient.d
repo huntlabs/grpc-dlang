@@ -1,7 +1,6 @@
 module grpc.GrpcClient;
 
 import hunt.concurrency.Promise;
-import hunt.concurrency.CompletableFuture;
 
 import hunt.logging.ConsoleLogger;
 

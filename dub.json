@@ -5,7 +5,7 @@
     "homepage": "https://www.huntlabs.net",
     "description": "gRPC implementation for D programming language",
     "dependencies": {
-        "hunt-http": "~>0.7.0",
+        "hunt-http": "~>0.8.0",
         "protobuf": "~>0.6.2"
     }
 }
