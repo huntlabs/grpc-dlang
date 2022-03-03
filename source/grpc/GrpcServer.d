@@ -105,7 +105,8 @@ class GrpcServer
                 grpcstream.attachStream(stream);
 
                 grpcstream.onDataReceived((ubyte[] data) {
-                    service.process(method, grpcstream, data);
+                    Status status = service.process(method, grpcstream, data);
+                    stream.headers(endHeaderFrame(status, stream.getId()), Callback.NOOP);
                 });       
 
 
