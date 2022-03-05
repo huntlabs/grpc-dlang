@@ -14,7 +14,6 @@ import hunt.http.codec.http.model;
 import hunt.util.Common;
 
 import std.conv;
-import hunt.logging.ConsoleLogger;
 
 HeadersFrame endHeaderFrame(Status status , int streamId)
 {
