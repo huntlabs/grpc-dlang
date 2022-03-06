@@ -2,7 +2,7 @@ module grpc.GrpcClient;
 
 import hunt.concurrency.Promise;
 
-import hunt.logging.ConsoleLogger;
+import hunt.logging.Logger;
 
 import std.stdio;
 import std.string;
