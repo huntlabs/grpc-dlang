@@ -1,11 +1,7 @@
-module server;
-
 import GreeterImpl;
 import grpc;
 import hunt.logging;
 import std.stdio;
-
-
 
 void main()
 {
@@ -14,9 +10,8 @@ void main()
 
     GrpcServer server = new GrpcServer();
     server.listen(host , port);
-    server.register( new GreeterImpl());
+    server.register( new GreeterImpl.GreeterImpl());
     server.start();
 
     getchar();
-
 }
