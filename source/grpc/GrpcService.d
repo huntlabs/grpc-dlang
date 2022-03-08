@@ -13,10 +13,12 @@ import hunt.http.codec.http.stream;
 import hunt.http.codec.http.model;
 import hunt.util.Common;
 
+import std.conv : to;
+
 HeadersFrame endHeaderFrame(Status status , int streamId)
 {
     HttpFields end_fileds = new HttpFields();
-    end_fileds.put("grpc-status" , status.errorCode());
+    end_fileds.put("grpc-status" , status.errorCode().to!string);
     end_fileds.put("grpc-message" , status.errorMessage());
     return  new HeadersFrame(streamId, new HttpMetaData(HttpVersion.HTTP_2, end_fileds), null , true);
 }
