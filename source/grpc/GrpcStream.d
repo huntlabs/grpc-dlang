@@ -177,6 +177,7 @@ class GrpcStream
         }
         ubyte[4] len = nativeToBigEndian(cast(int)data.length);
         ubyte[] grpc_data;
+        grpc_data.reserve(1 + len.length + data.length);
         grpc_data ~= compress;
         grpc_data ~= len;
         grpc_data ~= data;
