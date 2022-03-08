@@ -1,10 +1,10 @@
 module GreeterImpl;
 
 import helloworld.helloworld;
-import helloworld.helloworldrpc;
+import helloworld.helloworldRpc;
 import grpc;
 
-import hunt.logging.ConsoleLogger;
+import hunt.logging.Logger;
 
 /**
  * 

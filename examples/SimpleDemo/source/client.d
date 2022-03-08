@@ -1,7 +1,5 @@
-module client;
-
 import helloworld.helloworld;
-import helloworld.helloworldrpc;
+import helloworld.helloworldRpc;
 
 import grpc;
 import hunt.logging;
@@ -40,5 +38,4 @@ void main() {
     }
 
     getchar();
-
 }
