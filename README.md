@@ -1,6 +1,5 @@
-[![Build Status](https://travis-ci.org/huntlabs/grpc-dlang.svg?branch=master)](https://travis-ci.org/huntlabs/grpc-dlang)
-
 # grpc-dlang
+
 gRPC implementation for D.
 
 ### Building
