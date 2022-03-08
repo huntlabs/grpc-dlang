@@ -86,7 +86,7 @@ class GrpcServer
             
 
                 HttpFields fields = new HttpFields();
-                //fields.put("content-type" ,"application/grpc+proto");
+                fields.put("content-type" ,"application/grpc");
                 //fields.put("grpc-accept-encoding" , "identity");
                 //fields.put("accept-encoding" , "identity");
 
